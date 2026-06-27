@@ -1,0 +1,468 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "viewports": [
+    {
+      "name": "mobile",
+      "width": 375,
+      "height": 812
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "wide",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "capturedPages": [
+    {
+      "route": "/",
+      "label": "home"
+    },
+    {
+      "route": "/products",
+      "label": "products"
+    },
+    {
+      "route": "/products/embroidered-anarkali-kurti",
+      "label": "product-detail"
+    },
+    {
+      "route": "/categories/kurtis",
+      "label": "category"
+    },
+    {
+      "route": "/search?q=kurti",
+      "label": "search"
+    },
+    {
+      "route": "/cart",
+      "label": "cart"
+    },
+    {
+      "route": "/blog",
+      "label": "blog"
+    },
+    {
+      "route": "/login",
+      "label": "login"
+    },
+    {
+      "route": "/register",
+      "label": "register"
+    },
+    {
+      "route": "/wishlist",
+      "label": "wishlist"
+    },
+    {
+      "route": "/checkout",
+      "label": "checkout"
+    }
+  ],
+  "skippedPages": [
+    {
+      "route": "/account/dashboard",
+      "label": "account-dashboard"
+    },
+    {
+      "route": "/account/orders",
+      "label": "account-orders"
+    },
+    {
+      "route": "/account/membership",
+      "label": "account-membership"
+    },
+    {
+      "route": "/account/profile",
+      "label": "account-profile"
+    },
+    {
+      "route": "/account/addresses",
+      "label": "account-addresses"
+    },
+    {
+      "route": "/admin",
+      "label": "admin-dashboard"
+    },
+    {
+      "route": "/admin/analytics",
+      "label": "admin-analytics"
+    },
+    {
+      "route": "/admin/products",
+      "label": "admin-products"
+    },
+    {
+      "route": "/admin/orders",
+      "label": "admin-orders"
+    },
+    {
+      "route": "/admin/customers",
+      "label": "admin-customers"
+    },
+    {
+      "route": "/admin/coupons",
+      "label": "admin-coupons"
+    },
+    {
+      "route": "/admin/membership",
+      "label": "admin-membership"
+    },
+    {
+      "route": "/admin/categories",
+      "label": "admin-categories"
+    },
+    {
+      "route": "/admin/blog",
+      "label": "admin-blog"
+    }
+  ],
+  "summary": [
+    {
+      "route": "/",
+      "label": "home",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": [
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "route": "/",
+      "label": "home",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": [
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "route": "/",
+      "label": "home",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": [
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "route": "/",
+      "label": "home",
+      "viewport": "wide",
+      "status": "200",
+      "errors": [
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "route": "/products",
+      "label": "products",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/products",
+      "label": "products",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/products",
+      "label": "products",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/products",
+      "label": "products",
+      "viewport": "wide",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/products/embroidered-anarkali-kurti",
+      "label": "product-detail",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/products/embroidered-anarkali-kurti",
+      "label": "product-detail",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/products/embroidered-anarkali-kurti",
+      "label": "product-detail",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/products/embroidered-anarkali-kurti",
+      "label": "product-detail",
+      "viewport": "wide",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/categories/kurtis",
+      "label": "category",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/categories/kurtis",
+      "label": "category",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/categories/kurtis",
+      "label": "category",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/categories/kurtis",
+      "label": "category",
+      "viewport": "wide",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/search?q=kurti",
+      "label": "search",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/search?q=kurti",
+      "label": "search",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/search?q=kurti",
+      "label": "search",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/search?q=kurti",
+      "label": "search",
+      "viewport": "wide",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/cart",
+      "label": "cart",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/cart",
+      "label": "cart",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/cart",
+      "label": "cart",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/cart",
+      "label": "cart",
+      "viewport": "wide",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/blog",
+      "label": "blog",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/blog",
+      "label": "blog",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/blog",
+      "label": "blog",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/blog",
+      "label": "blog",
+      "viewport": "wide",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/login",
+      "label": "login",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/login",
+      "label": "login",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/login",
+      "label": "login",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/login",
+      "label": "login",
+      "viewport": "wide",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/register",
+      "label": "register",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/register",
+      "label": "register",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/register",
+      "label": "register",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/register",
+      "label": "register",
+      "viewport": "wide",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/wishlist",
+      "label": "wishlist",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/wishlist",
+      "label": "wishlist",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/wishlist",
+      "label": "wishlist",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/wishlist",
+      "label": "wishlist",
+      "viewport": "wide",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/checkout",
+      "label": "checkout",
+      "viewport": "mobile",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/checkout",
+      "label": "checkout",
+      "viewport": "tablet",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/checkout",
+      "label": "checkout",
+      "viewport": "desktop",
+      "status": "200",
+      "errors": []
+    },
+    {
+      "route": "/checkout",
+      "label": "checkout",
+      "viewport": "wide",
+      "status": "200",
+      "errors": []
+    }
+  ],
+  "durationMs": 239528
+}

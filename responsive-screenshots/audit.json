@@ -1,0 +1,761 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "viewports": [
+    {
+      "name": "mobile",
+      "width": 375,
+      "height": 812
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "wide",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "capturedPages": [
+    {
+      "route": "/",
+      "label": "home"
+    },
+    {
+      "route": "/products",
+      "label": "products"
+    },
+    {
+      "route": "/products/embroidered-anarkali-kurti",
+      "label": "product-detail"
+    },
+    {
+      "route": "/categories/kurtis",
+      "label": "category"
+    },
+    {
+      "route": "/search?q=kurti",
+      "label": "search"
+    },
+    {
+      "route": "/cart",
+      "label": "cart"
+    },
+    {
+      "route": "/blog",
+      "label": "blog"
+    },
+    {
+      "route": "/login",
+      "label": "login"
+    },
+    {
+      "route": "/register",
+      "label": "register"
+    },
+    {
+      "route": "/wishlist",
+      "label": "wishlist"
+    },
+    {
+      "route": "/checkout",
+      "label": "checkout"
+    }
+  ],
+  "results": [
+    {
+      "route": "/",
+      "label": "home",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": [
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover object-top transition-transform"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Tops",
+          "className": "object-cover object-top transition-transform"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1609245347659-30d6236adb8f%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Sarees",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D600%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover transition-transform duration-700"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1494790108377-be9c29b29330%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Priya Sharma",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1438761681033-6461ffad8d80%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Ananya Patel",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1534528741775-53994a69daeb%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Ritu Gupta",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1544005313-94ddf0286df2%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Meera Reddy",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1515886657613-9f3515b0c78f%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Instagram post 1",
+          "className": "object-cover transition-transform duration-500"
+        }
+      ]
+    },
+    {
+      "route": "/",
+      "label": "home",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": [
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover object-top transition-transform"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Tops",
+          "className": "object-cover object-top transition-transform"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1609245347659-30d6236adb8f%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Sarees",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D600%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover transition-transform duration-700"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1515886657613-9f3515b0c78f%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Instagram post 1",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1469334031218-e382a71b716b%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Instagram post 2",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1549488344-cbb6c34cf08b%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Instagram post 3",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1609245347659-30d6236adb8f%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Instagram post 4",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1595777457583-95e059d581b8%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Instagram post 5",
+          "className": "object-cover transition-transform duration-500"
+        }
+      ]
+    },
+    {
+      "route": "/",
+      "label": "home",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": [
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover object-top transition-transform"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Tops",
+          "className": "object-cover object-top transition-transform"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1609245347659-30d6236adb8f%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Sarees",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D600%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover transition-transform duration-700"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1494790108377-be9c29b29330%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Priya Sharma",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1438761681033-6461ffad8d80%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Ananya Patel",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1534528741775-53994a69daeb%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Ritu Gupta",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1544005313-94ddf0286df2%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Meera Reddy",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1515886657613-9f3515b0c78f%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Instagram post 1",
+          "className": "object-cover transition-transform duration-500"
+        }
+      ]
+    },
+    {
+      "route": "/",
+      "label": "home",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": [
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover object-top transition-transform"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Tops",
+          "className": "object-cover object-top transition-transform"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1609245347659-30d6236adb8f%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Sarees",
+          "className": "object-cover transition-transform duration-500"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1610030469629-276faf63f469%3Fw%3D600%26q%3D80&w=3840&q=75",
+          "alt": "Kurti Sets",
+          "className": "object-cover transition-transform duration-700"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1494790108377-be9c29b29330%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Priya Sharma",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1438761681033-6461ffad8d80%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Ananya Patel",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1534528741775-53994a69daeb%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Ritu Gupta",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1544005313-94ddf0286df2%3Fw%3D200%26q%3D80&w=3840&q=75",
+          "alt": "Meera Reddy",
+          "className": "object-cover"
+        },
+        {
+          "src": "http://localhost:3000/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1515886657613-9f3515b0c78f%3Fw%3D400%26q%3D80&w=3840&q=75",
+          "alt": "Instagram post 1",
+          "className": "object-cover transition-transform duration-500"
+        }
+      ]
+    },
+    {
+      "route": "/products",
+      "label": "products",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/products",
+      "label": "products",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/products",
+      "label": "products",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/products",
+      "label": "products",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/products/embroidered-anarkali-kurti",
+      "label": "product-detail",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/products/embroidered-anarkali-kurti",
+      "label": "product-detail",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/products/embroidered-anarkali-kurti",
+      "label": "product-detail",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/products/embroidered-anarkali-kurti",
+      "label": "product-detail",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/categories/kurtis",
+      "label": "category",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/categories/kurtis",
+      "label": "category",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/categories/kurtis",
+      "label": "category",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/categories/kurtis",
+      "label": "category",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/search?q=kurti",
+      "label": "search",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/search?q=kurti",
+      "label": "search",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/search?q=kurti",
+      "label": "search",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/search?q=kurti",
+      "label": "search",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/cart",
+      "label": "cart",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/cart",
+      "label": "cart",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/cart",
+      "label": "cart",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/cart",
+      "label": "cart",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/blog",
+      "label": "blog",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/blog",
+      "label": "blog",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/blog",
+      "label": "blog",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/blog",
+      "label": "blog",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/login",
+      "label": "login",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/login",
+      "label": "login",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/login",
+      "label": "login",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/login",
+      "label": "login",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/register",
+      "label": "register",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/register",
+      "label": "register",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/register",
+      "label": "register",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/register",
+      "label": "register",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/wishlist",
+      "label": "wishlist",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/wishlist",
+      "label": "wishlist",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/wishlist",
+      "label": "wishlist",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/wishlist",
+      "label": "wishlist",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/checkout",
+      "label": "checkout",
+      "viewport": "mobile",
+      "status": "200",
+      "docWidth": 375,
+      "winWidth": 375,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/checkout",
+      "label": "checkout",
+      "viewport": "tablet",
+      "status": "200",
+      "docWidth": 768,
+      "winWidth": 768,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/checkout",
+      "label": "checkout",
+      "viewport": "desktop",
+      "status": "200",
+      "docWidth": 1280,
+      "winWidth": 1280,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    },
+    {
+      "route": "/checkout",
+      "label": "checkout",
+      "viewport": "wide",
+      "status": "200",
+      "docWidth": 1440,
+      "winWidth": 1440,
+      "overflow": 0,
+      "overflowElements": [],
+      "missingImages": []
+    }
+  ]
+}
