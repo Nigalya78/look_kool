@@ -165,9 +165,7 @@ export function CollectionCategories() {
                     <span className="text-sm sm:text-base font-semibold text-[#111111] group-hover:text-[#5B1E7A] transition-colors duration-300 mb-1">
                       {category.name}
                     </span>
-                    <span className="text-xs font-medium text-muted-foreground mb-1">
-                      {category._count.products} products
-                    </span>
+                    
                     <span className="text-xs font-semibold text-[#5B1E7A] inline-flex items-center gap-1">
                       Explore Now <ChevronRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
                     </span>
