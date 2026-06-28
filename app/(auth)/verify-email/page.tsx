@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { consumeVerificationToken } from "@/lib/token";
 
 export const metadata: Metadata = {
-  title: "Verify Email — Complete Home Sollution",
+  title: "Verify Email — Look Kool",
 };
 
 export default async function VerifyEmailPage({

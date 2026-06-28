@@ -16,7 +16,7 @@ export async function sendEmail(params: SendEmailParams): Promise<void> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      sender: { email: "noreply@completehomesollution.com.au", name: "Complete Home Sollution" },
+      sender: { email: "noreply@completehomesollution.com.au", name: "Look Kool" },
       ...params,
     }),
   });
@@ -34,11 +34,11 @@ export async function sendOtpEmail(
 ): Promise<void> {
   await sendEmail({
     to: [{ email, name }],
-    subject: "Your Complete Home Sollution login code",
+    subject: "Your Look Kool login code",
     htmlContent: `
       <h2>Your login code</h2>
       <p>Hi ${name},</p>
-      <p>Use the code below to log in to Complete Home Sollution. It expires in 10 minutes.</p>
+      <p>Use the code below to log in to Look Kool. It expires in 10 minutes.</p>
       <h1 style="letter-spacing:0.3em;font-size:2rem;">${otp}</h1>
       <p>If you didn't request this, you can safely ignore this email.</p>
     `,
@@ -46,7 +46,7 @@ export async function sendOtpEmail(
 }
 
 const ADMIN_EMAIL = "info@completehomesollution.com.au";
-const ADMIN_NAME  = "Complete Home Sollution";
+const ADMIN_NAME  = "Look Kool";
 
 function buildItemsTable(items: { name: string; quantity: number; price: number }[]): string {
   const rows = items
@@ -113,7 +113,7 @@ export async function sendOrderConfirmationEmail(params: {
         <!-- Header -->
         <tr>
           <td style="background:#1a2e5a;padding:32px 40px;text-align:center;">
-            <p style="margin:0;font-size:22px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">Complete Home Sollution</p>
+            <p style="margin:0;font-size:22px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">Look Kool</p>
             <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,0.6);letter-spacing:0.05em;">PREMIUM FURNITURE · AUSTRALIA</p>
           </td>
         </tr>
@@ -170,7 +170,7 @@ export async function sendOrderConfirmationEmail(params: {
         <!-- Footer -->
         <tr>
           <td style="border-top:1px solid #f0ebe5;padding:24px 40px;text-align:center;">
-            <p style="margin:0 0 4px;font-size:12px;color:#aaa;">© ${new Date().getFullYear()} Complete Home Sollution Pty Ltd · Australia</p>
+            <p style="margin:0 0 4px;font-size:12px;color:#aaa;">© ${new Date().getFullYear()} Look Kool Pty Ltd · Australia</p>
             <p style="margin:0;font-size:12px;color:#aaa;">Questions? Email us at <a href="mailto:${ADMIN_EMAIL}" style="color:#e03d2a;text-decoration:none;">${ADMIN_EMAIL}</a></p>
           </td>
         </tr>
@@ -241,7 +241,7 @@ export async function sendOrderConfirmationEmail(params: {
         <!-- Footer -->
         <tr>
           <td style="border-top:1px solid #e2e8f0;padding:20px 40px;text-align:center;">
-            <p style="margin:0;font-size:12px;color:#aaa;">This is an automated notification from Complete Home Sollution.</p>
+            <p style="margin:0;font-size:12px;color:#aaa;">This is an automated notification from Look Kool.</p>
           </td>
         </tr>
 
@@ -305,7 +305,7 @@ export async function sendOrderCancellationEmail(params: {
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
         <tr>
           <td style="background:#1a2e5a;padding:32px 40px;text-align:center;">
-            <p style="margin:0;font-size:22px;font-weight:900;color:#ffffff;">Complete Home Sollution</p>
+            <p style="margin:0;font-size:22px;font-weight:900;color:#ffffff;">Look Kool</p>
             <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,0.6);">PREMIUM FURNITURE · AUSTRALIA</p>
           </td>
         </tr>
@@ -332,7 +332,7 @@ export async function sendOrderCancellationEmail(params: {
         </tr>
         <tr>
           <td style="border-top:1px solid #f0ebe5;padding:24px 40px;text-align:center;">
-            <p style="margin:0;font-size:12px;color:#aaa;">© ${new Date().getFullYear()} Complete Home Sollution Pty Ltd · Australia</p>
+            <p style="margin:0;font-size:12px;color:#aaa;">© ${new Date().getFullYear()} Look Kool Pty Ltd · Australia</p>
           </td>
         </tr>
       </table>
@@ -375,7 +375,7 @@ export async function sendRefundRequestEmail(params: {
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
         <tr>
           <td style="background:#1a2e5a;padding:32px 40px;text-align:center;">
-            <p style="margin:0;font-size:22px;font-weight:900;color:#ffffff;">Complete Home Sollution</p>
+            <p style="margin:0;font-size:22px;font-weight:900;color:#ffffff;">Look Kool</p>
           </td>
         </tr>
         <tr>
@@ -393,7 +393,7 @@ export async function sendRefundRequestEmail(params: {
         </tr>
         <tr>
           <td style="border-top:1px solid #f0ebe5;padding:20px 40px;text-align:center;">
-            <p style="margin:0;font-size:12px;color:#aaa;">© ${new Date().getFullYear()} Complete Home Sollution Pty Ltd</p>
+            <p style="margin:0;font-size:12px;color:#aaa;">© ${new Date().getFullYear()} Look Kool Pty Ltd</p>
           </td>
         </tr>
       </table>
@@ -427,7 +427,7 @@ export async function sendShippingUpdateEmail(params: {
 }): Promise<void> {
   await sendEmail({
     to: [{ email: params.email, name: params.name }],
-    subject: `Your Complete Home Sollution order #${params.orderId} has shipped!`,
+    subject: `Your Look Kool order #${params.orderId} has shipped!`,
     htmlContent: `
       <h2>Your order is on its way!</h2>
       <p>Hi ${params.name},</p>

@@ -499,8 +499,8 @@ export default function AdminCategoriesPage() {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              disabled={formLoading || (selectedCategory?._count.products ?? 0) > 0}
-              className="bg-red-600 text-white hover:bg-red-700"
+              disabled={formLoading}
+              className="bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
             >
               {formLoading ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Deleting...</>

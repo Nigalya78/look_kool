@@ -21,14 +21,8 @@ export const metadata: Metadata = {
 
 async function getTrendingProducts() {
   try {
-    // Exclude products from removed categories
-    const excludedCategorySlugs = ["sarees", "lehengas", "western-wear", "accessories"];
-
     const products = await db.product.findMany({
-      where: {
-        isActive: true,
-        category: { slug: { notIn: excludedCategorySlugs } },
-      },
+      where: { isActive: true },
       include: {
         category: { select: { name: true, slug: true } },
         productVariants: {
@@ -51,12 +45,7 @@ async function getTrendingProducts() {
     });
 
     if (products.length === 0) {
-      // Filter fallback products to exclude removed categories
-      const excludedCategorySlugs = ["sarees", "lehengas", "western-wear", "accessories"];
-      const filteredFallback = fallbackProducts.filter(
-        (p) => !excludedCategorySlugs.includes(p.category.slug)
-      );
-      return filteredFallback.slice(0, 8).map((p) => ({
+      return fallbackProducts.slice(0, 8).map((p) => ({
         id: p.id,
         name: p.name,
         slug: p.slug,
@@ -77,8 +66,8 @@ async function getTrendingProducts() {
 
     return products.map((p) => {
       const variant = p.hasVariants && p.productVariants[0] ? p.productVariants[0] : null;
-      const price = variant?.price ?? p.basePrice;
-      const comparePrice = variant?.comparePrice ?? p.comparePrice;
+      const price = (variant?.price && variant.price > 0) ? variant.price : p.basePrice;
+      const comparePrice = (variant?.comparePrice && variant.comparePrice > 0) ? variant.comparePrice : p.comparePrice;
       const image = variant?.images[0]?.url ?? p.images[0];
       const stock = variant?.stock ?? p.stock; // Use variant stock if available
 
@@ -106,7 +95,7 @@ async function getTrendingProducts() {
         hasVariants: p.hasVariants,
         img: image,
         description: p.description,
-        memberPrice: variant?.memberPrice ?? p.memberPrice,
+        memberPrice: (variant?.memberPrice && variant.memberPrice > 0) ? variant.memberPrice : (p.memberPrice && p.memberPrice > 0 ? p.memberPrice : null),
         stock,
         category: p.category,
       };

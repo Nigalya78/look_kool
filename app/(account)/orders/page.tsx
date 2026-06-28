@@ -15,7 +15,7 @@ import {
   Star,
 } from "lucide-react";
 
-export const metadata: Metadata = { title: "My Orders — Complete Home Sollution" };
+export const metadata: Metadata = { title: "My Orders — Look Kool" };
 
 export default async function OrdersPage() {
   const session = await auth();

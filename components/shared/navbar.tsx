@@ -189,11 +189,7 @@ export function Navbar() {
     fetch("/api/categories")
       .then(r => r.json())
       .then(d => {
-        if (Array.isArray(d.data)) {
-          // Filter out accessories, sarees, lehengas, western-wear categories
-          const excludedSlugs = ["accessories", "sarees", "lehengas", "western-wear"];
-          setCategories(d.data.filter((cat: NavCategory) => !excludedSlugs.includes(cat.slug)));
-        }
+        if (Array.isArray(d.data)) setCategories(d.data);
       })
       .catch(() => {});
   }, []);

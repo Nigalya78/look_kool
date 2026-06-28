@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, ArrowLeft } from "lucide-react";
 
-export const metadata: Metadata = { title: "Forgot Password — Complete Home Sollution" };
+export const metadata: Metadata = { title: "Forgot Password — Look Kool" };
 
 export default function ForgotPasswordPage() {
   return (

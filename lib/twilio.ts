@@ -21,7 +21,7 @@ export async function sendSms(to: string, body: string): Promise<void> {
 }
 
 export async function sendOtpSms(phone: string, otp: string): Promise<void> {
-  await sendSms(phone, `Your Complete Home Sollution login code is: ${otp}. Expires in 10 minutes.`);
+  await sendSms(phone, `Your Look Kool login code is: ${otp}. Expires in 10 minutes.`);
 }
 
 export async function sendOrderConfirmationSms(
@@ -31,7 +31,7 @@ export async function sendOrderConfirmationSms(
 ): Promise<void> {
   await sendSms(
     phone,
-    `Complete Home Sollution: Your order #${orderId} is confirmed! Total: A$${total.toFixed(2)}. We'll update you when it ships.`
+    `Look Kool: Your order #${orderId} is confirmed! Total: A$${total.toFixed(2)}. We'll update you when it ships.`
   );
 }
 
@@ -43,7 +43,7 @@ export async function sendShippingUpdateSms(
 ): Promise<void> {
   await sendSms(
     phone,
-    `Complete Home Sollution: Order #${orderId} has shipped via ${carrier}. Tracking: ${trackingNumber}`
+    `Look Kool: Order #${orderId} has shipped via ${carrier}. Tracking: ${trackingNumber}`
   );
 }
 
@@ -62,6 +62,6 @@ export async function sendOrderWhatsApp(
 ): Promise<void> {
   await sendWhatsApp(
     phone,
-    `🛋️ *Complete Home Sollution* — Order Confirmed!\n\nOrder #${orderId}\nTotal: A$${total.toFixed(2)}\n\nThank you for shopping with us! We'll notify you when your order ships.`
+    `🛋️ *Look Kool* — Order Confirmed!\n\nOrder #${orderId}\nTotal: A$${total.toFixed(2)}\n\nThank you for shopping with us! We'll notify you when your order ships.`
   );
 }

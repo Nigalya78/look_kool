@@ -77,9 +77,11 @@ export default function AdminProductsPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<{ id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
+  const fetchProducts = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const params = new URLSearchParams();
       if (debouncedSearch) params.set("search", debouncedSearch);
@@ -94,9 +96,9 @@ export default function AdminProductsPage() {
       setProducts(data.products);
       setPagination(data.pagination);
     } catch {
-      toast.error("Failed to load products");
+      if (!silent) toast.error("Failed to load products");
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [debouncedSearch, category, status, page]);
 
@@ -148,22 +150,61 @@ export default function AdminProductsPage() {
 
   const hasActiveFilters = search || category !== "all" || status !== "all";
 
+  const allVisibleSelected = products.length > 0 && products.every((p) => selectedIds.has(p.id));
+  const someSelected = selectedIds.size > 0;
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (allVisibleSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(products.map((p) => p.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const ids = Array.from(selectedIds);
+    setBulkDeleteOpen(false);
+    setSelectedIds(new Set());
+    // Optimistic removal
+    setProducts((prev) => prev.filter((p) => !ids.includes(p.id)));
+    setPagination((prev) => ({ ...prev, total: Math.max(0, prev.total - ids.length) }));
+    try {
+      await Promise.all(ids.map((id) => fetch(`/api/admin/products/${id}`, { method: "DELETE" })));
+      toast.success(`${ids.length} product${ids.length > 1 ? "s" : ""} deleted`);
+    } catch {
+      toast.error("Some products could not be deleted");
+      fetchProducts(true);
+    }
+  };
+
   const handleDelete = async () => {
     if (!productToDelete) return;
     setDeleting(true);
+    setDeleteDialogOpen(false);
+    const deleted = productToDelete;
+    setProductToDelete(null);
+    // Optimistic removal — instant UI update
+    setProducts((prev) => prev.filter((p) => p.id !== deleted.id));
+    setPagination((prev) => ({ ...prev, total: Math.max(0, prev.total - 1) }));
     try {
-      const res = await fetch(`/api/admin/products/${productToDelete.id}`, {
+      const res = await fetch(`/api/admin/products/${deleted.id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete");
-      toast.success(`"${productToDelete.name}" deleted`);
-      fetchProducts();
+      toast.success(`"${deleted.name}" deleted`);
     } catch {
       toast.error("Failed to delete product");
+      fetchProducts(true); // silent revert on failure
     } finally {
       setDeleting(false);
-      setDeleteDialogOpen(false);
-      setProductToDelete(null);
     }
   };
 
@@ -313,12 +354,43 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
+      {/* Bulk action bar */}
+      {someSelected && (
+        <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5">
+          <span className="text-sm font-semibold text-red-700">{selectedIds.size} selected</span>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-8 text-red-700 hover:bg-red-100 hover:text-red-800 ml-auto"
+            onClick={() => setSelectedIds(new Set())}
+          >
+            <X className="mr-1.5 h-3.5 w-3.5" /> Clear selection
+          </Button>
+          <Button
+            size="sm"
+            className="h-8 bg-red-600 text-white hover:bg-red-700"
+            onClick={() => setBulkDeleteOpen(true)}
+          >
+            <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete {selectedIds.size}
+          </Button>
+        </div>
+      )}
+
       {/* Table */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
+                <th className="w-10 px-3 py-3.5" onClick={(e) => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    ref={(el) => { if (el) el.indeterminate = someSelected && !allVisibleSelected; }}
+                    onChange={toggleSelectAll}
+                    className="h-4 w-4 rounded border-slate-300 text-[#5B1E7A] accent-[#5B1E7A] cursor-pointer"
+                  />
+                </th>
                 <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Product
                 </th>
@@ -340,12 +412,14 @@ export default function AdminProductsPage() {
                 <th className="px-4 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Actions
                 </th>
+
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
+                    <td className="w-10 px-3 py-4"><Skeleton className="h-4 w-4 rounded" /></td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <Skeleton className="h-11 w-11 rounded-lg shrink-0" />
@@ -365,7 +439,7 @@ export default function AdminProductsPage() {
                 ))
               ) : products.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-16 text-center">
+                  <td colSpan={8} className="px-4 py-16 text-center">
                     <div className="flex flex-col items-center gap-3">
                       <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
                         <Package className="h-8 w-8 text-slate-400" />
@@ -397,9 +471,17 @@ export default function AdminProductsPage() {
                   return (
                     <tr
                       key={product.id}
-                      className="hover:bg-slate-50 transition-colors group cursor-pointer"
+                      className={`hover:bg-slate-50 transition-colors group cursor-pointer ${selectedIds.has(product.id) ? "bg-purple-50/60" : ""}`}
                       onClick={() => router.push(`/admin/products/${product.id}`)}
                     >
+                      <td className="w-10 px-3 py-3.5" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(product.id)}
+                          onChange={() => toggleSelect(product.id)}
+                          className="h-4 w-4 rounded border-slate-300 text-[#5B1E7A] accent-[#5B1E7A] cursor-pointer"
+                        />
+                      </td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
                           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 overflow-hidden">
@@ -528,7 +610,36 @@ export default function AdminProductsPage() {
         )}
       </div>
 
-      {/* Delete Confirmation */}
+      {/* Bulk Delete Confirmation */}
+      <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100">
+                <Trash2 className="h-4 w-4 text-red-600" />
+              </div>
+              Delete {selectedIds.size} Product{selectedIds.size > 1 ? "s" : ""}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <p>Are you sure you want to delete <span className="font-semibold text-slate-800">{selectedIds.size} product{selectedIds.size > 1 ? "s" : ""}</span>?</p>
+                <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3">
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-red-600 mt-0.5" />
+                  <p className="text-sm text-red-700">This will permanently remove all selected products and their variants. <strong className="block mt-0.5">This action cannot be undone.</strong></p>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBulkDelete} className="bg-red-600 text-white hover:bg-red-700">
+              <Trash2 className="mr-2 h-4 w-4" /> Delete {selectedIds.size}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Single Delete Confirmation */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -538,6 +649,7 @@ export default function AdminProductsPage() {
               </div>
               Delete Product
             </AlertDialogTitle>
+
             <AlertDialogDescription asChild>
               <div className="space-y-3">
                 <p>

@@ -52,10 +52,19 @@ export function ProductCard(props: Readonly<ProductCardProps>) {
   const [imageError, setImageError] = useState(false);
   const router = useRouter();
   useEffect(() => { setMounted(true); }, []);
-  // Use variant price if available, otherwise use base price
-  const displayPrice = product.variant?.price ?? product.basePrice;
-  const displayComparePrice = product.variant?.comparePrice ?? product.comparePrice;
-  const displayMemberPrice = product.variant?.memberPrice ?? product.memberPrice;
+  // Use variant price if set (> 0), otherwise fall back to product base price
+  const displayPrice =
+    (product.variant?.price && product.variant.price > 0)
+      ? product.variant.price
+      : product.basePrice;
+  const displayComparePrice =
+    (product.variant?.comparePrice && product.variant.comparePrice > 0)
+      ? product.variant.comparePrice
+      : product.comparePrice;
+  const displayMemberPrice =
+    (product.variant?.memberPrice && product.variant.memberPrice > 0)
+      ? product.variant.memberPrice
+      : (product.memberPrice && product.memberPrice > 0 ? product.memberPrice : null);
   const displayStock = product.variant?.stock ?? product.stock;
   const displayImage = product.variant?.image ?? product.images[0] ?? "/placeholder.jpg";
   const hasDiscount = displayComparePrice && displayComparePrice > displayPrice;
@@ -96,8 +105,6 @@ export function ProductCard(props: Readonly<ProductCardProps>) {
     stock: displayStock,
     description: product.description,
     variantId: cartVariantId,
-    availableSizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    hasSizeChart: true,
   };
 
   const wishlistProduct = {

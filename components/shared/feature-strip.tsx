@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 const features = [
   {
     icon: Truck,
-    title: "Free Shipping",
-    description: "On orders above ₹999",
+    title: "Fast Delivery",
+    description: "Quick dispatch on all orders",
   },
   {
     icon: Wallet,

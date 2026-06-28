@@ -4,36 +4,49 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { X, Truck, Sparkles } from "lucide-react";
 
-const announcements = [
-  {
-    icon: Sparkles,
-    text: "Festive Season Sale — Up to 50% Off",
-  },
-  {
-    icon: Truck,
-    text: "Free Shipping on Orders Above ₹999",
-  },
-  {
-    icon: Sparkles,
-    text: "New Collection Arrived — Shop the Latest Trends",
-  },
-];
+type AnnouncementType = "DELIVERY" | "OFFER";
+
+interface Announcement {
+  id: string;
+  text: string;
+  type: AnnouncementType;
+}
+
+function typeIcon(type: AnnouncementType) {
+  return type === "DELIVERY" ? Truck : Sparkles;
+}
 
 export function AnnouncementBar() {
   const [isVisible, setIsVisible] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [items, setItems] = useState<Announcement[] | null>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % announcements.length);
-    }, 5000);
-    return () => clearInterval(interval);
+    fetch("/api/announcements")
+      .then(r => r.json())
+      .then(d => {
+        if (Array.isArray(d.announcements) && d.announcements.length > 0) {
+          setItems(d.announcements);
+        } else {
+          setItems([]);
+        }
+      })
+      .catch(() => setItems([]));
   }, []);
 
-  if (!isVisible) return null;
+  useEffect(() => {
+    if (!items || items.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % items.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [items]);
 
-  const current = announcements[currentIndex];
-  const Icon = current.icon;
+  // null = still loading (hide bar); [] = no DB announcements (hide bar)
+  if (!isVisible || !items || items.length === 0) return null;
+
+  const current = items[currentIndex];
+  const Icon = typeIcon(current.type);
 
   return (
     <div className="bg-[#5B1E7A] text-white py-2.5 relative z-50">

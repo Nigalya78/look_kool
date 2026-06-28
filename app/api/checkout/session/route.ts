@@ -328,17 +328,14 @@ export async function POST(req: NextRequest) {
     // Calculate totals after coupon discount
     const discountedSubtotal = Math.max(0, subtotal - couponDiscount);
 
-    // Calculate totals — members always get free shipping; otherwise use AusPost rate
-    const freeShipping = effectiveMember || discountedSubtotal >= 1200;
-
-    // FIX: Reject non-free orders that send shippingCost=0 — prevents shipping fee bypass
-    if (!freeShipping && (!input.shippingCost || input.shippingCost <= 0)) {
+    // FIX: Reject orders that send shippingCost=0 — prevents shipping fee bypass
+    if (!input.shippingCost || input.shippingCost <= 0) {
       return NextResponse.json(
         { error: "A shipping rate is required for this order" },
         { status: 400 }
       );
     }
-    const shippingCost = freeShipping ? 0 : Math.round(input.shippingCost! * 100) / 100;
+    const shippingCost = Math.round(input.shippingCost * 100) / 100;
 
     const tax = Math.round(discountedSubtotal * 0.1 * 100) / 100; // 10% GST on discounted amount
     // FIX: Round total to 2dp so DB value matches Stripe integer-cent charge

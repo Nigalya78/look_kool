@@ -14,12 +14,6 @@ interface CategoryPageProps {
 }
 
 async function getCategory(slug: string) {
-  // Exclude removed categories
-  const excludedCategorySlugs = ["sarees", "lehengas", "western-wear", "accessories"];
-  if (excludedCategorySlugs.includes(slug)) {
-    return null;
-  }
-
   try {
     const category = await db.category.findUnique({
       where: { slug },

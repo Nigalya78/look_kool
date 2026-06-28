@@ -60,7 +60,7 @@ export default async function QADashboardPage() {
             QA TEST DASHBOARD
           </div>
           <h1 className="text-3xl font-black text-foreground mb-2">
-            Complete Home Sollution
+            Look Kool
           </h1>
           <p className="text-muted-foreground text-sm">
             Select a page below to view and update test case statuses. All results are saved to the database.

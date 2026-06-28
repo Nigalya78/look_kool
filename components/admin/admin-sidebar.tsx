@@ -21,6 +21,7 @@ import {
   FolderTree,
   BookOpen,
   Tag,
+  Megaphone,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { Menu, X } from "lucide-react";
@@ -44,6 +45,7 @@ const NAV_GROUPS = [
     label: "Content",
     items: [
       { href: "/admin/blog", label: "Blog", icon: BookOpen },
+      { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
     ],
   },
   {
@@ -138,13 +140,13 @@ export function AdminSidebar() {
         {!collapsed && (
           <div className="overflow-hidden">
             <p className="text-sm font-bold text-white leading-tight truncate">Look Kool Admin</p>
-            <p className="text-[10px] text-slate-500 leading-tight">Complete Home Sollution</p>
+            <p className="text-[10px] text-slate-500 leading-tight">Look Kool</p>
           </div>
         )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4 space-y-5">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4 space-y-5 scrollbar-thin-dark">
         {NAV_GROUPS.map((group) => (
           <div key={group.label}>
             {!collapsed && (

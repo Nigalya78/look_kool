@@ -6,38 +6,13 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
-const categories = [
-  {
-    id: 1,
-    name: "New Arrivals",
-    image: "https://images.unsplash.com/photo-1549488344-cbb6c34cf08b?w=400&q=80",
-    link: "/products",
-  },
-  {
-    id: 2,
-    name: "Kurtis",
-    image: "https://images.unsplash.com/photo-1610030469629-276faf63f469?w=400&q=80",
-    link: "/categories/kurtis",
-  },
-  {
-    id: 3,
-    name: "Tops",
-    image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&q=80",
-    link: "/categories/tops",
-  },
-  {
-    id: 4,
-    name: "Maxi Dresses",
-    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&q=80",
-    link: "/categories/maxi-dresses",
-  },
-  {
-    id: 5,
-    name: "Sarees",
-    image: "https://images.unsplash.com/photo-1609245347659-30d6236adb8f?w=400&q=80",
-    link: "/categories/sarees",
-  },
-];
+interface DbCategory {
+  id: string;
+  name: string;
+  slug: string;
+  image: string | null;
+  _count: { products: number };
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -61,10 +36,22 @@ const itemVariants = {
   },
 };
 
+const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%23F0E6F5'/%3E%3C/svg%3E";
+
 export function CollectionCategories() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [categories, setCategories] = useState<DbCategory[]>([]);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then(r => r.json())
+      .then(d => {
+        if (Array.isArray(d.data)) setCategories(d.data);
+      })
+      .catch(() => {});
+  }, []);
 
   const checkScroll = () => {
     const container = scrollContainerRef.current;
@@ -158,17 +145,18 @@ export function CollectionCategories() {
             {categories.map((category) => (
               <motion.div key={category.id} variants={itemVariants} className="flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
                 <Link
-                  href={category.link}
+                  href={`/categories/${category.slug}`}
                   className="group flex items-center gap-4 rounded-3xl bg-[#F8F4FB] p-3 pr-5 hover:bg-[#F0E6F5] hover:shadow-[0_8px_30px_rgba(91,30,122,0.10)] transition-all duration-300 h-full"
                 >
                   {/* Square Image */}
                   <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden shrink-0 bg-white">
                     <Image
-                      src={category.image}
+                      src={category.image || PLACEHOLDER}
                       alt={category.name}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                       sizes="120px"
+                      unoptimized={!category.image}
                     />
                   </div>
 
@@ -176,6 +164,9 @@ export function CollectionCategories() {
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm sm:text-base font-semibold text-[#111111] group-hover:text-[#5B1E7A] transition-colors duration-300 mb-1">
                       {category.name}
+                    </span>
+                    <span className="text-xs font-medium text-muted-foreground mb-1">
+                      {category._count.products} products
                     </span>
                     <span className="text-xs font-semibold text-[#5B1E7A] inline-flex items-center gap-1">
                       Explore Now <ChevronRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />

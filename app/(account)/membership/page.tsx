@@ -10,7 +10,7 @@ import {
   UserCircle, MapPin, ArrowRight, Sparkles,
 } from "lucide-react";
 
-export const metadata: Metadata = { title: "Membership — Complete Home Sollution" };
+export const metadata: Metadata = { title: "Membership — Look Kool" };
 
 const NAV_LINKS = [
   { label: "Dashboard",  href: "/account/dashboard",  Icon: LayoutDashboard },
@@ -23,7 +23,7 @@ const NAV_LINKS = [
 const currencyFmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD", minimumFractionDigits: 0 });
 
 const BASE_PERKS = [
-  { Icon: Truck,       title: "Free express delivery",    desc: "Free shipping on all orders, regardless of cart size" },
+  { Icon: Truck,       title: "Priority dispatch",         desc: "Your orders are processed and shipped first" },
   { Icon: ShieldCheck, title: "3-year extended warranty", desc: "Double the standard warranty on all purchases" },
   { Icon: Zap,         title: "Early access to sales",    desc: "Shop new arrivals and sale events before everyone else" },
 ] as const;

@@ -95,55 +95,42 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
+  // Resolve auth + params in parallel
+  const [session, { id }] = await Promise.all([auth(), params]);
   if (!session?.user || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const { id } = await params;
 
   try {
     const product = await db.product.findUnique({
       where: { id },
       include: {
-        category: true,
+        category: { select: { id: true, name: true, slug: true } },
         variantAttributes: {
+          orderBy: { displayOrder: "asc" },
           include: {
-            variantValues: true,
+            variantValues: {
+              select: { id: true, value: true, hexCode: true, images: true },
+            },
           },
         },
         productVariants: {
           include: {
-            values: {
-              select: {
-                variantValueId: true,
-              },
-            },
-            images: {
-              select: {
-                id: true,
-                url: true,
-              },
-            },
+            values: { select: { variantValueId: true } },
+            images: { select: { id: true, url: true }, orderBy: { displayOrder: "asc" } },
           },
         },
       },
     });
 
     if (!product) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     return NextResponse.json({ product });
   } catch (error) {
     console.error("[GET /api/admin/products/[id]]", error);
-    return NextResponse.json(
-      { error: "Failed to fetch product" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch product" }, { status: 500 });
   }
 }
 
@@ -152,12 +139,10 @@ export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
+  const [session, { id }] = await Promise.all([auth(), params]);
   if (!session?.user || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const { id } = await params;
 
   try {
     const body = await req.json();
@@ -184,87 +169,74 @@ export async function PUT(
       }
     }
 
-    // Update product in a transaction to handle variants
-    const product = await db.$transaction(async (tx) => {
-      // 1. Update the base product
-      const updateData: any = {
-        updatedAt: new Date(),
-      };
-      if (data.name !== undefined) updateData.name = data.name;
-      if (data.description !== undefined) updateData.description = data.description;
-      if (data.basePrice !== undefined) updateData.basePrice = data.basePrice;
-      if (data.comparePrice !== undefined) updateData.comparePrice = data.comparePrice;
-      if (data.memberPrice !== undefined) updateData.memberPrice = data.memberPrice;
-      if (data.stock !== undefined) updateData.stock = data.stock;
-      if (data.sku !== undefined) updateData.sku = data.sku;
-      if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
-      if (data.material !== undefined) updateData.material = data.material;
-      if (data.roomType !== undefined) updateData.roomType = data.roomType;
-      if (data.isActive !== undefined) updateData.isActive = data.isActive;
-      if (data.hasVariants !== undefined) updateData.hasVariants = data.hasVariants;
-      if (data.images !== undefined) updateData.images = data.images;
-      if (data.weight !== undefined) updateData.weight = data.weight;
-      if (data.length !== undefined) updateData.length = data.length;
-      if (data.width !== undefined) updateData.width = data.width;
-      if (data.height !== undefined) updateData.height = data.height;
-      if (slug !== undefined) updateData.slug = slug;
+    // 1. Update base product fields
+    const updateData: any = { updatedAt: new Date() };
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.basePrice !== undefined) updateData.basePrice = data.basePrice;
+    if (data.comparePrice !== undefined) updateData.comparePrice = data.comparePrice;
+    if (data.memberPrice !== undefined) updateData.memberPrice = data.memberPrice;
+    if (data.stock !== undefined) updateData.stock = data.stock;
+    if (data.sku !== undefined) updateData.sku = data.sku;
+    if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
+    if (data.material !== undefined) updateData.material = data.material;
+    if (data.roomType !== undefined) updateData.roomType = data.roomType;
+    if (data.isActive !== undefined) updateData.isActive = data.isActive;
+    if (data.hasVariants !== undefined) updateData.hasVariants = data.hasVariants;
+    if (data.images !== undefined) updateData.images = data.images;
+    if (data.weight !== undefined) updateData.weight = data.weight;
+    if (data.length !== undefined) updateData.length = data.length;
+    if (data.width !== undefined) updateData.width = data.width;
+    if (data.height !== undefined) updateData.height = data.height;
+    if (slug !== undefined) updateData.slug = slug;
 
-      const updatedProduct = await tx.product.update({
-        where: { id },
-        data: updateData,
-      });
+    const product = await db.product.update({ where: { id }, data: updateData });
 
-      // 2. If variant data is provided in the payload, do a full clean-slate replace
-      if (data.variantAttributes !== undefined || data.productVariants !== undefined) {
-        // Always wipe existing variants + attributes first
-        await tx.productVariantValue.deleteMany({
-          where: { productVariant: { productId: id } },
-        });
-        await tx.variantImage.deleteMany({
-          where: { productVariant: { productId: id } },
-        });
-        await tx.productVariant.deleteMany({
-          where: { productId: id },
-        });
-        await tx.variantValue.deleteMany({
-          where: { variantAttribute: { productId: id } },
-        });
-        await tx.variantAttribute.deleteMany({
-          where: { productId: id },
-        });
+    // 2. If variant data provided, do a clean-slate replace (parallel deletes then parallel inserts)
+    if (data.variantAttributes !== undefined || data.productVariants !== undefined) {
+      // Wipe in dependency order — parallel where safe
+      await Promise.all([
+        db.productVariantValue.deleteMany({ where: { productVariant: { productId: id } } }),
+        db.variantImage.deleteMany({ where: { productVariant: { productId: id } } }),
+      ]);
+      await db.productVariant.deleteMany({ where: { productId: id } });
+      await db.variantValue.deleteMany({ where: { variantAttribute: { productId: id } } });
+      await db.variantAttribute.deleteMany({ where: { productId: id } });
 
-        // Re-create only if hasVariants and attributes are supplied
-        if (data.hasVariants && data.variantAttributes && data.variantAttributes.length > 0) {
-          const attrTempIdToDbId = new Map<string, string>();
-          const valueTempIdToDbId = new Map<string, string>();
+      if (data.hasVariants && data.variantAttributes && data.variantAttributes.length > 0) {
+        const valueTempIdToDbId = new Map<string, string>();
 
-          for (const attr of data.variantAttributes) {
-            const variantAttr = await tx.variantAttribute.create({
-              data: {
-                name: attr.name,
-                displayOrder: attr.displayOrder,
-                isPrimary: attr.isPrimary ?? false,
-                productId: id,
-              },
-            });
-            attrTempIdToDbId.set(attr.id, variantAttr.id);
+        // Create all attributes in parallel
+        const attrDbIds = await Promise.all(
+          data.variantAttributes.map((attr) =>
+            db.variantAttribute.create({
+              data: { name: attr.name, displayOrder: attr.displayOrder, isPrimary: attr.isPrimary ?? false, productId: id },
+              select: { id: true },
+            })
+          )
+        );
 
-            for (const val of attr.values) {
-              const variantValue = await tx.variantValue.create({
-                data: {
-                  value: val.value,
-                  hexCode: val.hexCode,
-                  images: val.images ?? [],
-                  variantAttributeId: variantAttr.id,
-                },
-              });
-              valueTempIdToDbId.set(val.id, variantValue.id);
-            }
-          }
+        // Create all values in parallel per attribute
+        await Promise.all(
+          data.variantAttributes.map(async (attr, attrIdx) => {
+            const attrDbId = attrDbIds[attrIdx].id;
+            await Promise.all(
+              attr.values.map(async (val) => {
+                const created = await db.variantValue.create({
+                  data: { value: val.value, hexCode: val.hexCode, images: val.images ?? [], variantAttributeId: attrDbId },
+                  select: { id: true },
+                });
+                valueTempIdToDbId.set(val.id, created.id);
+              })
+            );
+          })
+        );
 
-          if (data.productVariants && data.productVariants.length > 0) {
-            for (const variant of data.productVariants) {
-              const newVariant = await tx.productVariant.create({
+        // Create all variants in parallel
+        if (data.productVariants && data.productVariants.length > 0) {
+          await Promise.all(
+            data.productVariants.map(async (variant) => {
+              const newVariant = await db.productVariant.create({
                 data: {
                   productId: id,
                   sku: variant.sku,
@@ -278,54 +250,27 @@ export async function PUT(
                   width: variant.width,
                   height: variant.height,
                 },
+                select: { id: true },
               });
 
-              if (variant.images && variant.images.length > 0) {
-                await tx.variantImage.createMany({
-                  data: variant.images.map((url, index) => ({
-                    url,
-                    displayOrder: index,
-                    productVariantId: newVariant.id,
-                  })),
-                });
-              }
-
-              for (const tempValueId of variant.valueIds) {
-                const dbValueId = valueTempIdToDbId.get(tempValueId);
-                if (dbValueId) {
-                  await tx.productVariantValue.create({
-                    data: {
-                      productVariantId: newVariant.id,
-                      variantValueId: dbValueId,
-                    },
-                  });
-                }
-              }
-            }
-          }
+              await Promise.all([
+                variant.images && variant.images.length > 0
+                  ? db.variantImage.createMany({
+                      data: variant.images.map((url, index) => ({ url, displayOrder: index, productVariantId: newVariant.id })),
+                    })
+                  : Promise.resolve(),
+                db.productVariantValue.createMany({
+                  data: variant.valueIds
+                    .map((tmpId) => valueTempIdToDbId.get(tmpId))
+                    .filter((dbId): dbId is string => !!dbId)
+                    .map((dbId) => ({ productVariantId: newVariant.id, variantValueId: dbId })),
+                }),
+              ]);
+            })
+          );
         }
       }
-
-      // Return updated product with relations
-      return await tx.product.findUnique({
-        where: { id },
-        include: {
-          category: { select: { name: true } },
-          variantAttributes: {
-            include: { variantValues: true },
-          },
-          productVariants: {
-            include: {
-              values: { include: { variantValue: true } },
-              images: true,
-            },
-          },
-        },
-      });
-    }, {
-      maxWait: 10000, // 10 seconds
-      timeout: 20000, // 20 seconds
-    });
+    }
 
     return NextResponse.json({ product });
   } catch (error) {
@@ -350,12 +295,10 @@ export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
+  const [session, { id }] = await Promise.all([auth(), params]);
   if (!session?.user || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const { id } = await params;
 
   try {
     await db.product.delete({

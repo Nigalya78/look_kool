@@ -18,7 +18,7 @@ export async function sendVerificationEmail(
   const fromEmail =
     process.env.BREVO_FROM_EMAIL ?? "noreply@completehomesollution.com.au";
   const fromName =
-    process.env.BREVO_FROM_NAME ?? "Complete Home Sollution";
+    process.env.BREVO_FROM_NAME ?? "Look Kool";
 
   const html = `
 <!DOCTYPE html>
@@ -38,7 +38,7 @@ export async function sendVerificationEmail(
           <tr>
             <td style="background:#1a2e5a;padding:32px 40px;text-align:center;">
               <p style="margin:0;font-size:22px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">
-                Complete Home Sollution
+                Look Kool
               </p>
               <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,0.6);letter-spacing:0.05em;">
                 PREMIUM FURNITURE · AUSTRALIA
@@ -91,7 +91,7 @@ export async function sendVerificationEmail(
           <tr>
             <td style="border-top:1px solid #f0ebe5;padding:24px 40px;text-align:center;">
               <p style="margin:0 0 4px;font-size:12px;color:#aaaaaa;">
-                © ${new Date().getFullYear()} Complete Home Sollution Pty Ltd · Australia
+                © ${new Date().getFullYear()} Look Kool Pty Ltd · Australia
               </p>
               <p style="margin:0;font-size:12px;color:#aaaaaa;">
                 You're receiving this because you created an account with
@@ -121,7 +121,7 @@ export async function sendVerificationEmail(
     body: JSON.stringify({
       sender: { name: fromName, email: fromEmail },
       to: [{ email, name }],
-      subject: "Verify your email — Complete Home Sollution",
+      subject: "Verify your email — Look Kool",
       htmlContent: html,
     }),
   });

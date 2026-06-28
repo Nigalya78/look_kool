@@ -6,7 +6,7 @@ import { AccountSidebar } from "@/components/account/account-sidebar";
 import { AddressManager } from "@/components/account/address-manager";
 import { db } from "@/lib/db";
 
-export const metadata: Metadata = { title: "My Addresses — Complete Home Sollution" };
+export const metadata: Metadata = { title: "My Addresses — Look Kool" };
 
 export default async function AddressesPage() {
   const session = await auth();

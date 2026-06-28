@@ -112,7 +112,7 @@ export function FeaturedProducts({ products, isMember }: FeaturedProductsProps) 
 }
 
 function ProductCard({ product, isMember }: { product: Product; isMember: boolean }) {
-  const finalPrice = isMember && product.memberPrice ? product.memberPrice : product.price;
+  const finalPrice = (isMember && product.memberPrice && product.memberPrice > 0) ? product.memberPrice : product.price;
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -155,7 +155,7 @@ function ProductCard({ product, isMember }: { product: Product; isMember: boolea
         </button>
 
         {/* Member Badge */}
-        {product.memberPrice && (
+        {product.memberPrice && product.memberPrice > 0 && (
           <div className="absolute top-3 left-3 mt-6 bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-1 rounded-full">
             Member Price
           </div>

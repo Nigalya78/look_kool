@@ -10,7 +10,7 @@ import {
   Star, Truck, ShieldCheck, Tag, Calendar, CreditCard,
 } from "lucide-react";
 
-export const metadata: Metadata = { title: "My Dashboard — Complete Home Sollution" };
+export const metadata: Metadata = { title: "My Dashboard — Look Kool" };
 
 const BASE_NAV_LINKS = [
   { label: "Dashboard",   href: "/account/dashboard",  Icon: LayoutDashboard },

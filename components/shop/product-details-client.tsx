@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Truck, RotateCcw, ShieldCheck, Star, Heart, Share2, Package, Minus, Plus, Ruler } from "lucide-react";
 import { ProductGallery } from "./product-gallery";
 import { AddToCartButton } from "./add-to-cart-button";
 import { WishlistToggleButton } from "./wishlist-toggle-button";
-import { cn } from "@/lib/utils";
+import { VariantSelector } from "./variant-selector";
 
 interface ProductVariant {
   id: string;
@@ -72,13 +72,11 @@ interface ProductDetailsClientProps {
     reviewCount?: number;
     avgRating?: number | null;
   };
-  attributes: VariantAttribute[];
-  variants: ProductVariant[];
-  variantMap: Record<string, ProductVariant>;
-  defaultVariant: ProductVariant | null;
+  attributes?: VariantAttribute[];
+  variants?: ProductVariant[];
+  variantMap?: Record<string, ProductVariant>;
+  defaultVariant?: ProductVariant | null;
 }
-
-const SIZE_OPTIONS = ["XS", "S", "M", "L", "XL", "XXL"];
 
 // Size chart data
 const SIZE_CHART_DATA = [
@@ -92,28 +90,64 @@ const SIZE_CHART_DATA = [
 
 export function ProductDetailsClient({
   product,
-  defaultVariant,
-}: Omit<ProductDetailsClientProps, 'attributes' | 'variants' | 'variantMap'>) {
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  attributes = [],
+  variants = [],
+  variantMap = {},
+  defaultVariant = null,
+}: ProductDetailsClientProps) {
+  const hasVariants = attributes.length > 0 && variants.length > 0;
+
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(defaultVariant ?? null);
   const [quantity, setQuantity] = useState(1);
   const [showSizeChart, setShowSizeChart] = useState(false);
 
-  // Use product-level data directly (no variants)
-  const displayImages = product.images;
-  const displayPrice = product.basePrice;
-  const displayComparePrice = product.comparePrice;
-  const displayMemberPrice = product.memberPrice;
-  const displayStock = product.stock;
-  const displaySku = product.sku;
+  const handleVariantChange = useCallback((variant: ProductVariant | null) => {
+    setSelectedVariant(variant);
+    setQuantity(1);
+  }, []);
 
-  // Dimensions display logic
-  const displayWeight = product.weight ?? defaultVariant?.weight ?? null;
-  const displayLength = product.length ?? defaultVariant?.length ?? null;
-  const displayWidth = product.width ?? defaultVariant?.width ?? null;
-  const displayHeight = product.height ?? defaultVariant?.height ?? null;
+  // Derive display values from selected variant (or product-level fallback)
+  // A variant price of 0 means it was not individually set — use the product base price
+  const displayPrice = (selectedVariant && selectedVariant.price > 0) ? selectedVariant.price : product.basePrice;
+  const displayComparePrice = selectedVariant?.comparePrice ?? product.comparePrice;
+  const displayMemberPrice = selectedVariant?.memberPrice ?? product.memberPrice;
+  const displayStock = selectedVariant?.stock ?? product.stock;
+  const displaySku = selectedVariant?.sku ?? product.sku;
+
+  // Gallery: prefer variant images (colour-level attribute value images → variant images → product images)
+  const primaryAttr = attributes.find((a) => a.isPrimary);
+  const primaryValImages: string[] = selectedVariant && primaryAttr
+    ? primaryAttr.variantValues.find(
+        (vv) => selectedVariant.values.some((sv) => sv.variantValue.id === vv.id)
+      )?.images ?? []
+    : [];
+  const variantImages = selectedVariant?.images?.map((i) => i.url) ?? [];
+  const displayImages =
+    primaryValImages.length > 0
+      ? primaryValImages
+      : variantImages.length > 0
+      ? variantImages
+      : product.images;
+
+  // Dimensions: prefer selected variant's values
+  const displayWeight = selectedVariant?.weight ?? product.weight ?? null;
+  const displayLength = selectedVariant?.length ?? product.length ?? null;
+  const displayWidth = selectedVariant?.width ?? product.width ?? null;
+  const displayHeight = selectedVariant?.height ?? product.height ?? null;
   const hasDimensions = displayWeight !== null || displayLength !== null || displayWidth !== null || displayHeight !== null;
 
-  const variantLabel = selectedSize ? `Size: ${selectedSize}` : undefined;
+  // Extract available sizes from the Size attribute (for the Buy Now / Add to Cart popup)
+  const sizeAttr = attributes.find((a) => a.name.toLowerCase() === "size");
+  const availableSizes = sizeAttr
+    ? sizeAttr.variantValues.map((vv) => vv.value)
+    : [];
+
+  // Build variant label for cart (e.g. "Color: Black, Size: M")
+  const variantLabel = selectedVariant
+    ? selectedVariant.values
+        .map((v) => `${v.variantValue.variantAttribute.name}: ${v.variantValue.value}`)
+        .join(", ")
+    : undefined;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
@@ -204,38 +238,31 @@ export function ProductDetailsClient({
         {/* Description */}
         <p className="text-sm text-gray-600 leading-relaxed">{product.description}</p>
 
-        {/* Size Selector */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-[#111111]">Select Size</h3>
-            <button
-              onClick={() => setShowSizeChart(true)}
-              className="flex items-center gap-1 text-xs text-[#5B1E7A] hover:underline"
-            >
-              <Ruler className="h-3 w-3" />
-              Size Chart
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {SIZE_OPTIONS.map((size) => (
+        {/* Variant Selector */}
+        {hasVariants && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-[#111111]">Select Options</h3>
               <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={cn(
-                  "w-12 h-12 rounded-lg border-2 font-medium text-sm transition-all",
-                  selectedSize === size
-                    ? "border-[#5B1E7A] bg-[#5B1E7A] text-white"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-[#5B1E7A] hover:text-[#5B1E7A]"
-                )}
+                onClick={() => setShowSizeChart(true)}
+                className="flex items-center gap-1 text-xs text-[#5B1E7A] hover:underline"
               >
-                {size}
+                <Ruler className="h-3 w-3" />
+                Size Chart
               </button>
-            ))}
+            </div>
+            <VariantSelector
+              attributes={attributes}
+              variants={variants}
+              variantMap={variantMap}
+              defaultVariant={defaultVariant ?? null}
+              onVariantChange={handleVariantChange}
+            />
+            {!selectedVariant && (
+              <p className="text-xs text-amber-600">Please select all options to continue</p>
+            )}
           </div>
-          {!selectedSize && (
-            <p className="text-xs text-amber-600">Please select a size to continue</p>
-          )}
-        </div>
+        )}
 
         {/* Quantity Selector */}
         <div className="space-y-3">
@@ -296,11 +323,16 @@ export function ProductDetailsClient({
               images: displayImages,
               stock: displayStock,
               description: product.description,
-              variantId: null,
+              variantId: selectedVariant?.id ?? null,
               variantLabel,
+              availableSizes,
+              hasSizeChart: availableSizes.length > 0,
             }}
             quantity={quantity}
-            disabled={displayStock === 0 || !selectedSize}
+            hasVariants={hasVariants}
+            disabled={displayStock === 0 || (hasVariants && !selectedVariant)}
+            outOfStock={displayStock === 0}
+            directBuyNow
           />
         </div>
 
@@ -420,7 +452,7 @@ export function ProductDetailsClient({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-gray-100">
           <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
             <Truck className="w-5 h-5 text-[#5B1E7A]" />
-            <span className="text-xs font-medium text-gray-700">Free Shipping</span>
+            <span className="text-xs font-medium text-gray-700">Fast Delivery</span>
           </div>
           <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
             <RotateCcw className="w-5 h-5 text-[#5B1E7A]" />

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { auth } from "@/auth";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { AddToCartButton } from "@/components/shop/add-to-cart-button";
 import { ProductReviews } from "@/components/shop/product-reviews";
@@ -142,65 +143,40 @@ export async function generateMetadata({
   };
 }
 
+const RELATED_SELECT = {
+  id: true,
+  name: true,
+  slug: true,
+  images: true,
+  basePrice: true,
+  comparePrice: true,
+  memberPrice: true,
+  hasVariants: true,
+  material: true,
+  stock: true,
+  category: { select: { name: true, slug: true } },
+  productVariants: {
+    where: { isActive: true },
+    orderBy: { price: "asc" as const },
+    take: 1,
+    select: { id: true, price: true, comparePrice: true, memberPrice: true, stock: true },
+  },
+};
+
 async function getRelatedProducts(categoryId: string, currentProductId: string) {
   try {
-    // Exclude products from removed categories
-    const excludedCategorySlugs = ["sarees", "lehengas", "western-wear", "accessories"];
-
     // Get related products from same category
     const sameCategoryProducts = await db.product.findMany({
-      where: {
-        categoryId,
-        id: { not: currentProductId },
-        isActive: true,
-        category: { slug: { notIn: excludedCategorySlugs } },
-      },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        images: true,
-        basePrice: true,
-        comparePrice: true,
-        memberPrice: true,
-        hasVariants: true,
-        material: true,
-        productVariants: {
-          where: { isActive: true },
-          orderBy: { price: "asc" },
-          take: 1,
-          select: { price: true, comparePrice: true, stock: true },
-        },
-      },
+      where: { categoryId, id: { not: currentProductId }, isActive: true },
+      select: RELATED_SELECT,
       orderBy: { createdAt: "desc" },
       take: 4,
     });
 
     // Get other products from different categories
     const otherCategoryProducts = await db.product.findMany({
-      where: {
-        categoryId: { not: categoryId },
-        id: { not: currentProductId },
-        isActive: true,
-        category: { slug: { notIn: excludedCategorySlugs } },
-      },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        images: true,
-        basePrice: true,
-        comparePrice: true,
-        memberPrice: true,
-        hasVariants: true,
-        material: true,
-        productVariants: {
-          where: { isActive: true },
-          orderBy: { price: "asc" },
-          take: 1,
-          select: { price: true, comparePrice: true, stock: true },
-        },
-      },
+      where: { categoryId: { not: categoryId }, id: { not: currentProductId }, isActive: true },
+      select: RELATED_SELECT,
       orderBy: { createdAt: "desc" },
       take: 4,
     });
@@ -228,8 +204,15 @@ export default async function ProductDetailPage({
     return notFound();
   }
 
-  // Fetch related products for "You Might Also Like" section
-  const relatedProducts = await getRelatedProducts(product.categoryId, product.id);
+  // Fetch related products and membership status in parallel
+  const session = await auth();
+  const [relatedProducts, dbUser] = await Promise.all([
+    getRelatedProducts(product.categoryId, product.id),
+    session?.user?.id
+      ? db.user.findUnique({ where: { id: session.user.id }, select: { isMember: true } })
+      : Promise.resolve(null),
+  ]);
+  const isMember = dbUser?.isMember ?? false;
 
   // Default to first variant if product has variants
   const defaultVariant = product.hasVariants ? product.productVariants[0] : null;
@@ -288,7 +271,10 @@ export default async function ProductDetailPage({
             reviewCount: product._count.reviews,
             avgRating,
           }}
-          defaultVariant={null}
+          attributes={product.variantAttributes ?? []}
+          variants={product.productVariants ?? []}
+          variantMap={product.variantMap ?? {}}
+          defaultVariant={defaultVariant}
         />
 
         {/* ── Reviews & FAQ Grid ── */}
@@ -314,6 +300,7 @@ export default async function ProductDetailPage({
             categoryId={product.categoryId}
             currentProductId={product.id}
             initialProducts={relatedProducts}
+            isMember={isMember}
           />
         </div>
       </div>

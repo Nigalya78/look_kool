@@ -5,7 +5,7 @@ import { getProfile } from "@/lib/actions/profile";
 import { AccountSidebar } from "@/components/account/account-sidebar";
 import { ProfileForm } from "@/components/account/profile-form";
 
-export const metadata: Metadata = { title: "Edit Profile — Complete Home Sollution" };
+export const metadata: Metadata = { title: "Edit Profile — Look Kool" };
 
 export default async function ProfilePage() {
   const session = await auth();

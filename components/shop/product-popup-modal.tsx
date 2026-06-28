@@ -92,18 +92,18 @@ export function ProductPopupModal({
   }
 
   const handleConfirm = async () => {
-    await onConfirm(quantity, selectedSize);
     onOpenChange(false);
+    await onConfirm(quantity, selectedSize);
   };
 
-  const availableSizes = product?.availableSizes || SIZE_OPTIONS;
+  const availableSizes = product?.availableSizes ?? [];
   const showSizeSelector = availableSizes.length > 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl overflow-hidden border-border bg-white p-0 sm:rounded-[28px]">
-        <div className="grid md:grid-cols-[0.92fr_1.08fr]">
-          <div className="relative min-h-[260px] bg-muted md:min-h-[520px]">
+      <DialogContent className="max-w-3xl w-full overflow-hidden border-border bg-white p-0 sm:rounded-2xl max-h-[95dvh] flex flex-col">
+        <div className="grid md:grid-cols-[1fr_1.2fr] flex-1 min-h-0 overflow-y-auto">
+          <div className="relative min-h-[220px] bg-muted md:min-h-0 md:h-full">
             {imageError ? (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
                 <div className="text-center">
@@ -123,9 +123,9 @@ export function ProductPopupModal({
             )}
           </div>
 
-          <div className="flex flex-col gap-5 p-5 md:p-8">
+          <div className="flex flex-col gap-4 p-5 md:p-6 overflow-y-auto">
             <DialogHeader className="text-left space-y-2">
-              <DialogTitle className="text-2xl md:text-3xl font-black tracking-tight text-foreground">
+              <DialogTitle className="text-xl md:text-2xl font-black tracking-tight text-foreground">
                 {product.name}
               </DialogTitle>
               <DialogDescription className="text-sm md:text-base text-muted-foreground leading-relaxed">
@@ -135,12 +135,12 @@ export function ProductPopupModal({
 
             <div className="space-y-2">
               <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-black text-foreground">
-                  ${unitPrice.toLocaleString()}
+                <span className="text-2xl font-black text-foreground">
+                  ₹{unitPrice.toLocaleString()}
                 </span>
                 {memberPrice ? (
                   <span className="text-sm text-primary font-semibold">
-                    Member: ${memberPrice.toLocaleString()}
+                    Member: ₹{memberPrice.toLocaleString()}
                   </span>
                 ) : null}
               </div>

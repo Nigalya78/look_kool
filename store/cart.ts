@@ -43,6 +43,7 @@ export const useCartStore = create<CartState>()(
       addItem: (product, quantity = 1) => {
         set((state) => {
           const key = getCartItemKey(product.id, product.variantId ?? null);
+          // Exact key match (same productId + same variantId)
           const existing = state.items.find(
             (item) => getCartItemKey(item.product.id, item.product.variantId ?? null) === key
           );
@@ -51,23 +52,26 @@ export const useCartStore = create<CartState>()(
             return {
               items: state.items.map((item) =>
                 getCartItemKey(item.product.id, item.product.variantId ?? null) === key
-                  ? {
-                      ...item,
-                      quantity: Math.min(item.quantity + quantity, item.product.stock),
-                    }
+                  ? { ...item, quantity: Math.min(item.quantity + quantity, item.product.stock) }
                   : item
               ),
             };
           }
 
+          // If adding with a real variantId, evict any null-variantId entry for the same product
+          // (prevents duplicates when Buy Now is clicked after a no-variant add)
+          const newVariantId = product.variantId ?? null;
+          const filteredItems = newVariantId !== null
+            ? state.items.filter(
+                (item) => !(item.product.id === product.id && item.product.variantId === null)
+              )
+            : state.items;
+
           return {
             items: [
-              ...state.items,
+              ...filteredItems,
               {
-                product: {
-                  ...product,
-                  variantId: product.variantId ?? null,
-                },
+                product: { ...product, variantId: product.variantId ?? null },
                 quantity: Math.min(quantity, product.stock),
               },
             ],
@@ -126,7 +130,7 @@ export const useCartStore = create<CartState>()(
         get().getItemQuantity(productId, variantId) > 0,
     }),
     {
-      name: "lookkool-cart-v3",
+      name: "lookkool-cart-v4",
       storage: createJSONStorage(() => localStorage),
     }
   )

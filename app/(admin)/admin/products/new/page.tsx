@@ -96,13 +96,25 @@ function VariantCard({
 
         <span className="flex-1 text-sm font-medium text-slate-700">{label}</span>
 
-        {/* Quick stats */}
+        {/* Inline stock input — always visible */}
+        <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+          <label className="text-xs text-slate-500 hidden sm:inline">Stock</label>
+          <Input
+            type="number"
+            min="0"
+            value={variant.stock}
+            onFocus={(e) => e.target.select()}
+            onChange={(e) => onUpdate({ stock: parseInt(e.target.value) || 0 })}
+            className="h-7 w-20 text-xs text-center px-1"
+          />
+        </div>
+
+        {/* Image indicator */}
         <span className="text-xs text-slate-400 hidden sm:inline">
           {primaryImages && primaryImages.length > 0
             ? <span className="text-primary/70">↑ {primaryLabel}</span>
-            : hasImages ? `${variant.images.length} img` : "No images"}
+            : hasImages ? `${variant.images.length} img` : ""}
         </span>
-        <span className="text-xs text-slate-400 hidden sm:inline">Stock: {variant.stock}</span>
         <Switch
           checked={variant.isActive}
           onCheckedChange={(checked: boolean) => {
@@ -118,7 +130,7 @@ function VariantCard({
       {/* Expanded detail */}
       {expanded && (
         <div className="p-4 space-y-4 border-t border-slate-200">
-          {/* SKU + Price + Stock row */}
+          {/* SKU + Price + Compare/Member Price */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs">SKU</Label>
@@ -136,17 +148,6 @@ function VariantCard({
                 step="0.01"
                 value={variant.price ?? ""}
                 onChange={(e) => onUpdate({ price: parseFloat(e.target.value) || 0 })}
-                className="h-8 text-xs"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">Stock</Label>
-              <Input
-                type="number"
-                min="0"
-                value={variant.stock}
-                onFocus={(e) => variant.stock === 0 && e.target.select()}
-                onChange={(e) => onUpdate({ stock: parseInt(e.target.value) || 0 })}
                 className="h-8 text-xs"
               />
             </div>
@@ -228,7 +229,7 @@ export default function NewProductPage() {
   const [stock, setStock] = useState("");
   const [material, setMaterial] = useState("");
   const [washCare, setWashCare] = useState("");
-  const [fitType, setFitType] = useState("");
+  const [sleeveType, setSleeveType] = useState("");
   const [occasion, setOccasion] = useState("");
   const [roomType, setRoomType] = useState("");
   const [isActive, setIsActive] = useState(true);
@@ -295,7 +296,7 @@ export default function NewProductPage() {
         setStock(p.stock?.toString() || "");
         setMaterial(p.material || "");
         setWashCare(p.washCare || "");
-        setFitType(p.fitType || "");
+        setSleeveType(p.fitType || "");
         setOccasion(p.occasion || "");
         setRoomType(p.roomType || "");
         setIsActive(p.isActive);
@@ -463,9 +464,18 @@ export default function NewProductPage() {
       displayOrder: variantAttributes.length,
       values: [],
     };
-    setVariantAttributes([...variantAttributes, newAttr]);
+    const updatedAttrs = [...variantAttributes, newAttr];
+    setVariantAttributes(updatedAttrs);
     setNewAttributeName("");
     setSelectedAttributeId(newAttr.id);
+    // Auto-set as primary if it looks like a color attribute
+    const isColorAttr = /colou?r/i.test(newAttributeName.trim());
+    if (isColorAttr) {
+      setPrimaryAttributeId(newAttr.id);
+    } else if (!primaryAttributeId && updatedAttrs.length === 1) {
+      // If it's the only attribute, auto-set it as primary
+      setPrimaryAttributeId(newAttr.id);
+    }
   };
 
   const removeVariantAttribute = (id: string) => {
@@ -585,7 +595,7 @@ export default function NewProductPage() {
         categoryId,
         material: material || undefined,
         washCare: washCare || undefined,
-        fitType: fitType || undefined,
+        fitType: sleeveType || undefined,
         occasion: occasion || undefined,
         roomType: roomType || undefined,
         isActive,
@@ -910,16 +920,19 @@ export default function NewProductPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="fitType">Fit Type</Label>
-                  <Select value={fitType} onValueChange={setFitType}>
+                  <Label htmlFor="sleeveType">Sleeve Type</Label>
+                  <Select value={sleeveType} onValueChange={setSleeveType}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select fit type" />
+                      <SelectValue placeholder="Select sleeve type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Regular">Regular</SelectItem>
-                      <SelectItem value="Slim">Slim</SelectItem>
-                      <SelectItem value="Loose">Loose</SelectItem>
-                      <SelectItem value="Oversized">Oversized</SelectItem>
+                      <SelectItem value="Sleeveless">Sleeveless</SelectItem>
+                      <SelectItem value="Short Sleeve">Short Sleeve</SelectItem>
+                      <SelectItem value="3/4 Sleeve">3/4 Sleeve</SelectItem>
+                      <SelectItem value="Full Sleeve">Full Sleeve</SelectItem>
+                      <SelectItem value="Cap Sleeve">Cap Sleeve</SelectItem>
+                      <SelectItem value="Bell Sleeve">Bell Sleeve</SelectItem>
+                      <SelectItem value="Puff Sleeve">Puff Sleeve</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1009,7 +1022,10 @@ export default function NewProductPage() {
               )}
               {variantAttributes.length > 0 && (
                 <div className="space-y-2 pt-1">
-                  <p className="text-xs text-slate-500">Select which option is <strong>Primary</strong> — its values will share images (e.g. all Black variants use one image set).</p>
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2.5 text-xs text-blue-700 space-y-1">
+                    <p className="font-semibold">Which option has different images?</p>
+                    <p>Select the option whose values each have their own photos (usually <strong>Color</strong>). All size/other variants of the same colour will share those images automatically.</p>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {variantAttributes.map((attr) => {
                       const isPrimary = primaryAttributeId === attr.id;
@@ -1026,7 +1042,7 @@ export default function NewProductPage() {
                         >
                           {isPrimary && <Check className="h-3.5 w-3.5 shrink-0" />}
                           {attr.name}
-                          {isPrimary && <span className="text-[10px] font-semibold bg-primary text-white rounded px-1 ml-0.5">PRIMARY</span>}
+                          {isPrimary && <span className="text-[10px] font-semibold bg-primary text-white rounded px-1 ml-0.5">HAS IMAGES</span>}
                           <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); removeVariantAttribute(attr.id); }}
@@ -1086,6 +1102,7 @@ export default function NewProductPage() {
                                 <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
                                   {val.hexCode && <span className="h-4 w-4 rounded-full border border-slate-200 shrink-0" style={{ background: val.hexCode }} />}
                                   {val.value}
+                                  <span className="text-xs font-normal text-slate-400">— upload images for this {attr.name}</span>
                                 </div>
                                 <button type="button" onClick={() => removeVariantValue(attr.id, val.id)} className="text-slate-400 hover:text-red-500">
                                   <X className="h-3.5 w-3.5" />
@@ -1094,7 +1111,7 @@ export default function NewProductPage() {
                               <ImageUploader
                                 images={val.images ?? []}
                                 onChange={(imgs) => updateAttributeValueImages(attr.id, val.id, imgs)}
-                                maxImages={5}
+                                maxImages={8}
                                 folder="products/variants"
                               />
                             </div>
@@ -1245,41 +1262,104 @@ export default function NewProductPage() {
           })()}
 
           {/* Step 3 — Configure each selected variant */}
-          {productVariants.length > 0 && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Package className="h-4 w-4" />
-                  Step 3 — Configure Variants ({productVariants.length})
-                </CardTitle>
-                <p className="text-sm text-slate-500">Click a variant to set price, stock, images, and dimensions.</p>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {productVariants.map((variant) => {
-                  // Look up the primary attribute value this variant belongs to
-                  const primaryAttr = primaryAttributeId
-                    ? variantAttributes.find((a) => a.id === primaryAttributeId)
-                    : null;
-                  const primaryVal = primaryAttr
-                    ? primaryAttr.values.find((v) => variant.valueIds.includes(v.id))
-                    : null;
-                  const primImgs = primaryVal?.images && primaryVal.images.length > 0
-                    ? primaryVal.images
-                    : undefined;
-                  return (
-                    <VariantCard
-                      key={variant.id}
-                      variant={variant}
-                      label={getVariantLabel(variant)}
-                      onUpdate={(updates) => updateVariant(variant.id, updates)}
-                      primaryImages={primImgs}
-                      primaryLabel={primaryVal?.value}
-                    />
-                  );
-                })}
-              </CardContent>
-            </Card>
-          )}
+          {productVariants.length > 0 && (() => {
+            const primaryAttr = primaryAttributeId
+              ? variantAttributes.find((a) => a.id === primaryAttributeId)
+              : null;
+            const secondaryAttrs = variantAttributes.filter((a) => a.id !== primaryAttributeId);
+
+            // Group variants by their primary-attribute value
+            if (primaryAttr && secondaryAttrs.length > 0) {
+              // Grouped view: one section per colour (or whatever the image-bearing attribute is)
+              return (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Package className="h-4 w-4" />
+                      Step 3 — Configure Variants ({productVariants.length})
+                    </CardTitle>
+                    <p className="text-sm text-slate-500">
+                      Variants are grouped by <strong>{primaryAttr.name}</strong>. Images are set on each {primaryAttr.name} and shared across all sizes automatically.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-5">
+                    {primaryAttr.values
+                      .filter((pv) => productVariants.some((v) => v.valueIds.includes(pv.id)))
+                      .map((pv) => {
+                        const groupVariants = productVariants.filter((v) => v.valueIds.includes(pv.id));
+                        const primImgs = pv.images && pv.images.length > 0 ? pv.images : undefined;
+                        return (
+                          <div key={pv.id} className="rounded-xl border border-slate-200 overflow-hidden">
+                            {/* Group header */}
+                            <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 border-b border-slate-200">
+                              {pv.hexCode && (
+                                <span className="h-5 w-5 rounded-full border border-slate-300 shrink-0" style={{ background: pv.hexCode }} />
+                              )}
+                              <span className="font-semibold text-sm text-slate-800">{primaryAttr.name}: {pv.value}</span>
+                              {primImgs ? (
+                                <span className="ml-auto text-xs text-emerald-600 font-medium flex items-center gap-1">
+                                  <Check className="h-3.5 w-3.5" />{primImgs.length} image{primImgs.length !== 1 ? "s" : ""} set
+                                </span>
+                              ) : (
+                                <span className="ml-auto text-xs text-amber-600 font-medium">No images — set them in Step 2</span>
+                              )}
+                            </div>
+                            {/* Size rows */}
+                            <div className="divide-y divide-slate-100">
+                              {groupVariants.map((variant) => (
+                                <VariantCard
+                                  key={variant.id}
+                                  variant={variant}
+                                  label={secondaryAttrs
+                                    .map((sa) => {
+                                      const v = sa.values.find((sv) => variant.valueIds.includes(sv.id));
+                                      return v ? `${sa.name}: ${v.value}` : "";
+                                    })
+                                    .filter(Boolean)
+                                    .join(", ") || getVariantLabel(variant)}
+                                  onUpdate={(updates) => updateVariant(variant.id, updates)}
+                                  primaryImages={primImgs}
+                                  primaryLabel={pv.value}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </CardContent>
+                </Card>
+              );
+            }
+
+            // Flat view (single attribute or no primary set)
+            return (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Package className="h-4 w-4" />
+                    Step 3 — Configure Variants ({productVariants.length})
+                  </CardTitle>
+                  <p className="text-sm text-slate-500">Click a variant to set price, stock, and images.</p>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {productVariants.map((variant) => {
+                    const pVal = primaryAttr?.values.find((v) => variant.valueIds.includes(v.id));
+                    const primImgs = pVal?.images?.length ? pVal.images : undefined;
+                    return (
+                      <VariantCard
+                        key={variant.id}
+                        variant={variant}
+                        label={getVariantLabel(variant)}
+                        onUpdate={(updates) => updateVariant(variant.id, updates)}
+                        primaryImages={primImgs}
+                        primaryLabel={pVal?.value}
+                      />
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            );
+          })()}
         </div>
       )}
 

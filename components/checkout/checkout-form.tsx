@@ -51,8 +51,8 @@ import {
   deleteAddress,
 } from "@/lib/actions/address";
 import { useCartStore } from "@/store/cart";
+import { useBuyNowStore } from "@/store/buy-now";
 import type { ActivePlan } from "@/lib/membership-plan";
-import Image from "next/image";
 import { AddressAutocomplete } from "@/components/account/address-autocomplete";
 import {
   Select,
@@ -169,9 +169,12 @@ export function CheckoutForm({ savedAddresses, addressesError: _addressesError, 
   const [selectedRateCode, setSelectedRateCode] = useState<string | null>(null);
   const [isFetchingRates, setIsFetchingRates] = useState(false);
   const [ratesError, setRatesError] = useState<string | null>(null);
-  // Cart state
-  const items = useCartStore((state) => state.items);
+  // Cart state — if a Buy Now item is set, show only that product in checkout
+  const allCartItems = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
+  const buyNowItem = useBuyNowStore((state) => state.item);
+  const clearBuyNow = useBuyNowStore((state) => state.clear);
+  const items = buyNowItem ? [buyNowItem] : allCartItems;
 
   // effectiveMember = already a member OR just added membership in this checkout
   const effectiveMember = isMember || (!isMember && addMembership);
@@ -218,8 +221,7 @@ export function CheckoutForm({ savedAddresses, addressesError: _addressesError, 
   discount = Math.round(discount * 100) / 100;
   const discountedSubtotal = subtotal - discount;
   const selectedRate = shippingRates.find((r) => r.serviceCode === selectedRateCode);
-  const freeShipping = discountedSubtotal >= 1200;
-  const shippingCost = freeShipping ? 0 : (selectedRate?.price ?? null);
+  const shippingCost = selectedRate?.price ?? null;
   const gst = Math.round(discountedSubtotal * 0.1 * 100) / 100;
   const membershipAdd = (!isMember && addMembership) ? MEMBERSHIP_PRICE : 0;
   const total = discountedSubtotal + (shippingCost ?? 0) + gst + membershipAdd;
@@ -495,8 +497,8 @@ export function CheckoutForm({ savedAddresses, addressesError: _addressesError, 
       return;
     }
 
-    // Require a shipping rate when not free
-    if (!freeShipping && !selectedRateCode) {
+    // Require a shipping rate
+    if (!selectedRateCode) {
       toast({ title: "Select a shipping option", description: "Please choose a shipping service.", variant: "destructive" });
       return;
     }
@@ -536,7 +538,8 @@ export function CheckoutForm({ savedAddresses, addressesError: _addressesError, 
       }
 
       if (data.url) {
-        // Cart is cleared on the order confirmation page after successful payment
+        // Cart and buyNow are cleared on the order confirmation page after successful payment
+        clearBuyNow();
         window.location.href = data.url;
       } else {
         toast({ title: "Error", description: "No checkout URL returned.", variant: "destructive" });
@@ -583,13 +586,18 @@ export function CheckoutForm({ savedAddresses, addressesError: _addressesError, 
               return (
                 <div key={itemKey} className="flex gap-4 py-4 first:pt-0 last:pb-0">
                   <Link href={`/products/${item.product.slug}?returnTo=/checkout`} className="relative h-16 w-16 rounded-lg overflow-hidden bg-muted shrink-0 block hover:opacity-80 transition-opacity">
-                    {item.product.images?.[0] && (
-                      <Image
+                    {item.product.images?.[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
                         src={item.product.images[0]}
                         alt={item.product.name}
-                        fill
-                        className="object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                        className="h-full w-full object-cover"
                       />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center bg-muted">
+                        <ShoppingBag className="h-6 w-6 text-muted-foreground/40" />
+                      </div>
                     )}
                   </Link>
                   <div className="flex-1 min-w-0">
@@ -800,9 +808,7 @@ export function CheckoutForm({ savedAddresses, addressesError: _addressesError, 
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Shipping</span>
               <span className="font-medium">
-                {freeShipping ? (
-                  <span className="text-green-600">Free</span>
-                ) : isFetchingRates ? (
+                {isFetchingRates ? (
                   <span className="text-muted-foreground flex items-center gap-1">
                     <Loader2 className="h-3 w-3 animate-spin" /> Calculating…
                   </span>
@@ -831,22 +837,15 @@ export function CheckoutForm({ savedAddresses, addressesError: _addressesError, 
             <div className="flex justify-between items-center">
               <span className="text-base font-bold">Total</span>
               <span className="text-xl font-black">
-                {freeShipping || shippingCost !== null
+                {shippingCost !== null
                   ? currencyFormatter.format(total)
                   : "—"}
               </span>
             </div>
           </div>
 
-          {freeShipping && (
-            <p className="mt-3 text-xs text-green-600 font-medium flex items-center gap-1">
-              Free shipping on orders over ₹50,000
-            </p>
-          )}
-
           {/* Shipping options */}
-          {!freeShipping && (
-            <div className="mt-4">
+          <div className="mt-4">
               {isFetchingRates && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground py-2">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -892,8 +891,7 @@ export function CheckoutForm({ savedAddresses, addressesError: _addressesError, 
                   ))}
                 </div>
               )}
-            </div>
-          )}
+          </div>
 
           {/* ── Membership Add-on Card (BookMyShow style) ── */}
           {isAuthenticated && !isMember && (
@@ -977,7 +975,7 @@ export function CheckoutForm({ savedAddresses, addressesError: _addressesError, 
           <Button
             className="mt-5 w-full h-12 text-sm font-semibold"
             onClick={handlePlaceOrder}
-            disabled={isProcessing || items.length === 0 || (!freeShipping && shippingCost === null)}
+            disabled={isProcessing || items.length === 0 || shippingCost === null}
           >
             {isProcessing ? (
               <>
@@ -988,7 +986,7 @@ export function CheckoutForm({ savedAddresses, addressesError: _addressesError, 
               <>
                 <CreditCard className="mr-2 h-4 w-4" />
                 {addMembership && !isMember
-                  ? `Pay ${freeShipping || shippingCost !== null ? currencyFormatter.format(total) : "—"} & Join`
+                  ? `Pay ${shippingCost !== null ? currencyFormatter.format(total) : "—"} & Join`
                   : "Place Order & Pay"}
               </>
             )}

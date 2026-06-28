@@ -12,7 +12,7 @@ const PAGE_SIZE = 8;
 // Filter options
 const SIZE_OPTIONS = ["XS", "S", "M", "L", "XL", "XXL"];
 const FABRIC_OPTIONS = ["Cotton", "Silk", "Georgette", "Chiffon", "Linen", "Rayon", "Polyester", "Velvet", "Satin"];
-const SLEEVE_TYPE_OPTIONS = ["Sleeveless", "Short Sleeve", "3/4 Sleeve", "Long Sleeve", "Bell Sleeve", "Cold Shoulder", "Cap Sleeve"];
+const SLEEVE_TYPE_OPTIONS = ["Sleeveless", "Short Sleeve", "3/4 Sleeve", "Long Sleeve","Puff Sleeve"];
 
 // Dual Range Slider Component
 interface DualRangeSliderProps {
@@ -152,6 +152,8 @@ interface Product {
   stock: number;
   images: string[];
   material: string | null;
+  fitType?: string | null;
+  sizes?: string[];
   hasVariants: boolean;
   category: { name: string; slug: string };
   reviewCount: number;
@@ -212,16 +214,30 @@ export function ProductsClient({ categories, products, isMember = false }: Produ
       }
       
       // Fabric filter
-      if (selectedFabrics.length > 0 && product.material) {
-        const matchesFabric = selectedFabrics.some(f => 
-          product.material?.toLowerCase().includes(f.toLowerCase())
+      if (selectedFabrics.length > 0) {
+        if (!product.material) return false;
+        const matchesFabric = selectedFabrics.some(f =>
+          product.material!.toLowerCase().includes(f.toLowerCase())
         );
         if (!matchesFabric) return false;
       }
-      
+
+      // Size filter — match against variant size values
+      if (selectedSizes.length > 0) {
+        const productSizes = product.sizes ?? [];
+        const matchesSize = selectedSizes.some(s => productSizes.includes(s));
+        if (!matchesSize) return false;
+      }
+
+      // Sleeve type filter — stored in fitType field
+      if (selectedSleeveTypes.length > 0) {
+        if (!product.fitType) return false;
+        if (!selectedSleeveTypes.includes(product.fitType)) return false;
+      }
+
       return true;
     });
-  }, [products, selectedCategory, priceRange, selectedFabrics]);
+  }, [products, selectedCategory, priceRange, selectedFabrics, selectedSizes, selectedSleeveTypes]);
 
   const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
   const pagedProducts = filteredProducts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

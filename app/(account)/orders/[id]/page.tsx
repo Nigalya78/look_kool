@@ -20,7 +20,7 @@ import {
   Hash,
 } from "lucide-react";
 
-export const metadata: Metadata = { title: "Order Details — Complete Home Sollution" };
+export const metadata: Metadata = { title: "Order Details — Look Kool" };
 
 interface OrderDetailPageProps {
   params: Promise<{ id: string }>;

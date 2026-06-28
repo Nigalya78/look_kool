@@ -1,6 +1,6 @@
-# Complete Home Sollution — Project Setup Guide
+# Look Kool — Project Setup Guide
 
-This guide will help you set up the Complete Home Sollution furniture e-commerce application on your local machine.
+This guide will help you set up the Look Kool furniture e-commerce application on your local machine.
 
 ## Prerequisites
 

@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/shared/providers";
-import { Navbar } from "@/components/shared/navbar";
-import { Footer } from "@/components/shared/footer";
 import { ShopShell } from "@/components/shared/shop-shell";
-import { AnnouncementBar } from "@/components/shared/announcement-bar";
 
 // Premium Typography
 const inter = Inter({ 
@@ -65,7 +62,6 @@ export default function RootLayout({
     <html lang="en-IN" suppressHydrationWarning>
       <body className={`${inter.variable} ${playfair.variable} ${cormorant.variable} font-sans antialiased flex flex-col min-h-screen bg-white`}>
         <Providers>
-          <AnnouncementBar />
           <ShopShell>{children}</ShopShell>
         </Providers>
       </body>

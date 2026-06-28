@@ -15,19 +15,22 @@ export const revalidate = 3600;
 
 async function getProducts() {
   try {
-    // Exclude products from removed categories
-    const excludedCategorySlugs = ["sarees", "lehengas", "western-wear", "accessories"];
-
     const products = await db.product.findMany({
-      where: {
-        isActive: true,
-        category: { slug: { notIn: excludedCategorySlugs } },
-      },
+      where: { isActive: true },
       include: {
         category: { select: { name: true, slug: true } },
         productVariants: {
           where: { isActive: true },
-          include: { images: { take: 1, orderBy: { displayOrder: "asc" } } },
+          include: {
+            images: { take: 1, orderBy: { displayOrder: "asc" } },
+            values: {
+              include: {
+                variantValue: {
+                  include: { variantAttribute: { select: { name: true } } },
+                },
+              },
+            },
+          },
           orderBy: { price: "asc" },
           take: 1,
         },
@@ -40,29 +43,43 @@ async function getProducts() {
       return fallbackProducts;
     }
 
-    return products.map((p) => ({
-      id: p.id,
-      name: p.name,
-      slug: p.slug,
-      description: p.description,
-      basePrice: p.basePrice,
-      comparePrice: p.comparePrice,
-      memberPrice: p.memberPrice,
-      stock: p.stock,
-      images: p.images,
-      material: p.material,
-      hasVariants: p.hasVariants,
-      category: p.category,
-      reviewCount: p._count.reviews,
-      variant: p.hasVariants && p.productVariants[0] ? {
-        id: p.productVariants[0].id,
-        price: p.productVariants[0].price,
-        comparePrice: p.productVariants[0].comparePrice,
-        memberPrice: p.productVariants[0].memberPrice,
-        stock: p.productVariants[0].stock,
-        image: p.productVariants[0].images[0]?.url,
-      } : null,
-    }));
+    return products.map((p) => {
+      // Collect all size values across all active variants
+      const sizes = Array.from(new Set(
+        p.productVariants.flatMap((v) =>
+          v.values
+            .filter((vv) => vv.variantValue.variantAttribute.name.toLowerCase() === "size")
+            .map((vv) => vv.variantValue.value)
+        )
+      ));
+
+      const variant = p.hasVariants && p.productVariants[0] ? p.productVariants[0] : null;
+      return {
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        description: p.description,
+        basePrice: p.basePrice,
+        comparePrice: p.comparePrice,
+        memberPrice: p.memberPrice,
+        stock: p.stock,
+        images: p.images,
+        material: p.material,
+        fitType: p.fitType,
+        sizes,
+        hasVariants: p.hasVariants,
+        category: p.category,
+        reviewCount: p._count.reviews,
+        variant: variant ? {
+          id: variant.id,
+          price: variant.price,
+          comparePrice: variant.comparePrice,
+          memberPrice: variant.memberPrice,
+          stock: variant.stock,
+          image: variant.images[0]?.url,
+        } : null,
+      };
+    });
   } catch {
     return fallbackProducts;
   }

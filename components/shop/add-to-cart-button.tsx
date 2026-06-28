@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShoppingCart, Check, Zap } from "lucide-react";
+import { ShoppingCart, Check, Zap, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart";
+import { useBuyNowStore } from "@/store/buy-now";
 import { useRouter } from "next/navigation";
 import {
   ProductPopupModal,
@@ -15,6 +16,8 @@ interface AddToCartButtonProps {
   disabled?: boolean;
   hasVariants?: boolean;
   quantity?: number;
+  outOfStock?: boolean;
+  directBuyNow?: boolean;
 }
 
 export function AddToCartButton({
@@ -22,48 +25,70 @@ export function AddToCartButton({
   disabled = false,
   hasVariants = false,
   quantity = 1,
+  outOfStock = false,
+  directBuyNow = false,
 }: AddToCartButtonProps) {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isAddPopupOpen, setIsAddPopupOpen] = useState(false);
+  const [isBuyNowPopupOpen, setIsBuyNowPopupOpen] = useState(false);
+  const [isBuyNowLoading, setIsBuyNowLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isAddedRaw = useCartStore((state) => state.isInCart(product.id, product.variantId ?? null));
   const addItem = useCartStore((state) => state.addItem);
+  const setBuyNow = useBuyNowStore((state) => state.set);
   const router = useRouter();
 
   useEffect(() => { setMounted(true); }, []);
 
-  // Before hydration completes, always render the "not added" state to match SSR
   const isAdded = mounted && isAddedRaw;
 
-  // If variant is selected (variantId exists), show "Add to Cart", otherwise "Choose Options"
   const hasSelectedVariant = product.variantId !== null && product.variantId !== undefined;
-  const buttonText = disabled 
-    ? "Out of Stock" 
-    : hasVariants && !hasSelectedVariant 
-      ? "Choose Options" 
+  const buttonText = disabled
+    ? "Out of Stock"
+    : hasVariants && !hasSelectedVariant
+      ? "Choose Options"
       : "Add to Cart";
 
+  // ── Add to Cart ──────────────────────────────────────────────────
   const handleAddToCart = () => {
     if (hasVariants && !hasSelectedVariant) {
-      // Show popup only if variants exist but none selected
-      setIsPopupOpen(true);
+      setIsAddPopupOpen(true);
     } else {
-      // Add directly to cart with specified quantity
       addItem(product, quantity);
     }
   };
 
+  const handleAddConfirm = (qty: number, selectedSize: string | null) => {
+    const cartProduct = selectedSize
+      ? { ...product, variantLabel: `Size: ${selectedSize}` }
+      : product;
+    addItem(cartProduct, qty);
+  };
+
+  // ── Buy Now ───────────────────────────────────────────────────────
+  // If directBuyNow=true (product detail page), skip popup — variant/qty already selected on page
+  // Otherwise open popup for qty+size selection (product cards on listing page)
   const handleBuyNow = () => {
-    if (hasVariants && !hasSelectedVariant) {
-      setIsPopupOpen(true);
-    } else {
-      // Add to cart with specified quantity and go to checkout
-      addItem(product, quantity);
+    if (directBuyNow) {
+      setIsBuyNowLoading(true);
+      const cartProduct = { ...product, variantId: product.variantId ?? null };
+      setBuyNow({ product: cartProduct, quantity });
+      addItem(cartProduct, quantity);
       router.push("/checkout");
+    } else {
+      setIsBuyNowPopupOpen(true);
     }
   };
 
-  const handleConfirm = (quantity: number) => {
-    addItem(product, quantity);
+  const handleBuyNowConfirm = (qty: number, selectedSize: string | null) => {
+    setIsBuyNowLoading(true);
+    const cartProduct = selectedSize
+      ? { ...product, variantLabel: `Size: ${selectedSize}` }
+      : product;
+    // Add to cart so it's preserved if user doesn't place the order
+    addItem(cartProduct, qty);
+    // Set the buy-now item so checkout shows only this product
+    setBuyNow({ product: { ...cartProduct, variantId: cartProduct.variantId ?? null }, quantity: qty });
+    router.push("/checkout");
   };
 
   return (
@@ -98,25 +123,39 @@ export function AddToCartButton({
         {/* Buy Now Button */}
         <button
           onClick={handleBuyNow}
-          disabled={disabled}
+          disabled={outOfStock || isBuyNowLoading}
           className={cn(
             "flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-all duration-200",
-            disabled
+            outOfStock
               ? "cursor-not-allowed bg-gray-100 text-gray-400"
+              : isBuyNowLoading
+              ? "bg-[#333333] text-white cursor-wait"
               : "bg-[#111111] text-white hover:bg-[#333333] shadow-lg"
           )}
         >
-          <Zap className="w-4 h-4" />
-          Buy Now
+          {isBuyNowLoading
+            ? <Loader2 className="w-4 h-4 animate-spin" />
+            : <Zap className="w-4 h-4" />}
+          {isBuyNowLoading ? "Redirecting..." : "Buy Now"}
         </button>
       </div>
 
+      {/* Add to Cart popup */}
       <ProductPopupModal
-        open={isPopupOpen}
-        onOpenChange={setIsPopupOpen}
+        open={isAddPopupOpen}
+        onOpenChange={setIsAddPopupOpen}
         product={product}
-        onConfirm={handleConfirm}
-        confirmLabel={hasSelectedVariant ? "Add to Cart" : "Add Selected Item"}
+        onConfirm={handleAddConfirm}
+        confirmLabel="Add to Cart"
+      />
+
+      {/* Buy Now popup */}
+      <ProductPopupModal
+        open={isBuyNowPopupOpen}
+        onOpenChange={setIsBuyNowPopupOpen}
+        product={product}
+        onConfirm={handleBuyNowConfirm}
+        confirmLabel="Buy Now"
       />
     </>
   );

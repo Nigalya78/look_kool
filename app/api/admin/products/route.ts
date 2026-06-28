@@ -180,89 +180,86 @@ export async function POST(req: Request) {
     const body = await req.json();
     const data = createProductSchema.parse(body);
 
-    // Generate slug from name
+    // Generate unique slug
     const baseSlug = slugify(data.name, { lower: true, strict: true });
     let slug = baseSlug;
     let counter = 1;
-
-    // Ensure unique slug
     while (await db.product.findUnique({ where: { slug } })) {
-      slug = `${baseSlug}-${counter}`;
-      counter++;
+      slug = `${baseSlug}-${counter++}`;
     }
 
-    // Create product in a transaction
-    const product = await db.$transaction(async (tx) => {
-      console.log("[POST /api/admin/products] Creating base product...");
-      // 1. Create the base product
-      const newProduct = await tx.product.create({
-        data: {
-          name: data.name,
-          slug,
-          description: data.description || "",
-          basePrice: data.basePrice,
-          comparePrice: data.comparePrice,
-          memberPrice: data.memberPrice,
-          stock: data.stock,
-          sku: data.sku,
-          categoryId: data.categoryId,
-          material: data.material,
-          roomType: data.roomType,
-          isActive: data.isActive,
-          hasVariants: data.hasVariants,
-          images: data.images,
-          weight: data.weight,
-          length: data.length,
-          width: data.width,
-          height: data.height,
-        },
-      });
+    // 1. Create the base product first (we need its ID)
+    const product = await db.product.create({
+      data: {
+        name: data.name,
+        slug,
+        description: data.description || "",
+        basePrice: data.basePrice,
+        comparePrice: data.comparePrice,
+        memberPrice: data.memberPrice,
+        stock: data.stock,
+        sku: data.sku,
+        categoryId: data.categoryId,
+        material: data.material,
+        roomType: data.roomType,
+        isActive: data.isActive,
+        hasVariants: data.hasVariants,
+        images: data.images,
+        weight: data.weight,
+        length: data.length,
+        width: data.width,
+        height: data.height,
+      },
+    });
 
-      // 2. If product has variants, create variant attributes and values
-      if (data.hasVariants && data.variantAttributes && data.variantAttributes.length > 0) {
-        console.log("[POST /api/admin/products] Creating variants, attributes:", data.variantAttributes.length);
-        // Build maps: temp ID -> DB ID
-        const attrTempIdToDbId = new Map<string, string>();
-        const valueTempIdToDbId = new Map<string, string>();
+    // 2. Create variant attributes + values in parallel (no transaction needed)
+    if (data.hasVariants && data.variantAttributes && data.variantAttributes.length > 0) {
+      // Pre-generate DB IDs so we can wire everything up without sequential round-trips
+      const valueTempIdToDbId = new Map<string, string>();
 
-        // Create variant attributes and their values
-        for (const attr of data.variantAttributes) {
-          console.log("[POST /api/admin/products] Creating attribute:", attr.name, "tempId:", attr.id);
-          const variantAttr = await tx.variantAttribute.create({
+      // Create all attributes in parallel
+      const attrDbIds = await Promise.all(
+        data.variantAttributes.map((attr) =>
+          db.variantAttribute.create({
             data: {
               name: attr.name,
               displayOrder: attr.displayOrder,
               isPrimary: attr.isPrimary ?? false,
-              productId: newProduct.id,
+              productId: product.id,
             },
-          });
-          // Map temp attr ID to DB ID
-          attrTempIdToDbId.set(attr.id, variantAttr.id);
+            select: { id: true },
+          })
+        )
+      );
 
-          // Create variant values and build temp ID to DB ID mapping
-          for (const val of attr.values) {
-            const variantValue = await tx.variantValue.create({
-              data: {
-                value: val.value,
-                hexCode: val.hexCode,
-                images: val.images ?? [],
-                variantAttributeId: variantAttr.id,
-              },
-            });
-            // Map temp value ID to DB ID
-            valueTempIdToDbId.set(val.id, variantValue.id);
-          }
-        }
+      // Create all values in parallel (one batch per attribute)
+      await Promise.all(
+        data.variantAttributes.map(async (attr, attrIdx) => {
+          const attrDbId = attrDbIds[attrIdx].id;
+          await Promise.all(
+            attr.values.map(async (val) => {
+              const created = await db.variantValue.create({
+                data: {
+                  value: val.value,
+                  hexCode: val.hexCode,
+                  images: val.images ?? [],
+                  variantAttributeId: attrDbId,
+                },
+                select: { id: true },
+              });
+              valueTempIdToDbId.set(val.id, created.id);
+            })
+          );
+        })
+      );
 
-        // 3. Create product variants
-        if (data.productVariants && data.productVariants.length > 0) {
-          console.log("[POST /api/admin/products] Creating product variants:", data.productVariants.length);
-          console.log("[POST /api/admin/products] Value ID mapping:", Object.fromEntries(valueTempIdToDbId));
-          for (const variant of data.productVariants) {
-            console.log("[POST /api/admin/products] Creating variant with valueIds:", variant.valueIds);
-            const newVariant = await tx.productVariant.create({
+      // 3. Create all product variants in parallel
+      if (data.productVariants && data.productVariants.length > 0) {
+        await Promise.all(
+          data.productVariants.map(async (variant) => {
+            const newVariant = await db.productVariant.create({
               data: {
-                productId: newProduct.id,
+                productId: product.id,
                 sku: variant.sku,
                 price: variant.price,
                 comparePrice: variant.comparePrice,
@@ -274,61 +271,45 @@ export async function POST(req: Request) {
                 width: variant.width,
                 height: variant.height,
               },
+              select: { id: true },
             });
 
-            // Create variant images if provided
-            if (variant.images && variant.images.length > 0) {
-              await tx.variantImage.createMany({
-                data: variant.images.map((url, index) => ({
-                  url,
-                  displayOrder: index,
-                  productVariantId: newVariant.id,
-                })),
-              });
-            }
-
-            // Link variant to values using temp ID -> DB ID mapping
-            for (const tempValueId of variant.valueIds) {
-              const dbValueId = valueTempIdToDbId.get(tempValueId);
-              if (dbValueId) {
-                await tx.productVariantValue.create({
-                  data: {
+            // Create images + value-links in parallel
+            await Promise.all([
+              variant.images && variant.images.length > 0
+                ? db.variantImage.createMany({
+                    data: variant.images.map((url, index) => ({
+                      url,
+                      displayOrder: index,
+                      productVariantId: newVariant.id,
+                    })),
+                  })
+                : Promise.resolve(),
+              db.productVariantValue.createMany({
+                data: variant.valueIds
+                  .map((tmpId) => valueTempIdToDbId.get(tmpId))
+                  .filter((dbId): dbId is string => !!dbId)
+                  .map((dbId) => ({
                     productVariantId: newVariant.id,
-                    variantValueId: dbValueId,
-                  },
-                });
-              }
-            }
-          }
-        }
+                    variantValueId: dbId,
+                  })),
+              }),
+            ]);
+          })
+        );
       }
-
-      return newProduct;
-    }, {
-      maxWait: 10000, // 10 seconds
-      timeout: 20000, // 20 seconds
-    });
+    }
 
     return NextResponse.json({ product }, { status: 201 });
   } catch (error) {
     console.error("[POST /api/admin/products] Error:", error);
     if (error instanceof z.ZodError) {
-      console.error("[POST /api/admin/products] Validation errors:", JSON.stringify(error.issues, null, 2));
       return NextResponse.json(
         { error: "Validation error", details: error.issues },
         { status: 400 }
       );
     }
-    // Log more details about the error
-    if (error instanceof Error) {
-      console.error("[POST /api/admin/products] Error message:", error.message);
-      console.error("[POST /api/admin/products] Error stack:", error.stack);
-    }
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("[POST /api/admin/products] Error message:", errorMessage);
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
