@@ -139,26 +139,22 @@ export default async function HomePage() {
       {/* Hero Section */}
       <HeroSection />
       
-      {/* Collection Categories */}
-      <CollectionCategories />
-      
-      {/* Feature Strip */}
-      <FeatureStrip />
-      
-      {/* Promotional Banners */}
-      <PromotionalBanners />
+      <CollectionCategories/>
       
       {/* Featured Products */}
       <FeaturedProducts products={trendingProducts} isMember={isMember} />
       
+      {/* Feature Strip */}
+      <FeatureStrip />
+      
       {/* Membership CTA */}
       <MembershipBanner />
       
-      {/* Testimonials */}
-      <TestimonialsSection />
-      
       {/* Instagram Gallery */}
       <InstagramGallery />
+
+      {/* Testimonials */}
+      <TestimonialsSection />
       
       {/* Newsletter */}
       <NewsletterSection />

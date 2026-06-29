@@ -3,177 +3,171 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 interface DbCategory {
   id: string;
   name: string;
   slug: string;
   image: string | null;
-  _count: { products: number };
+  _count: {
+    products: number;
+  };
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.5,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
-
-const PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%23F0E6F5'/%3E%3C/svg%3E";
+const PLACEHOLDER =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Crect width='800' height='800' fill='%23F3EDF7'/%3E%3C/svg%3E";
 
 export function CollectionCategories() {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
   const [categories, setCategories] = useState<DbCategory[]>([]);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+  const isDragging = useRef(false);
+  const dragStartX = useRef(0);
+  const scrollStartX = useRef(0);
 
   useEffect(() => {
     fetch("/api/categories")
-      .then(r => r.json())
-      .then(d => {
-        if (Array.isArray(d.data)) setCategories(d.data);
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.data)) setCategories(data.data);
       })
       .catch(() => {});
   }, []);
 
-  const checkScroll = () => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      setCanScrollLeft(container.scrollLeft > 0);
-      setCanScrollRight(
-        container.scrollLeft < container.scrollWidth - container.clientWidth - 10
-      );
-    }
-  };
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener("scroll", checkScroll);
-      checkScroll();
-      return () => container.removeEventListener("scroll", checkScroll);
-    }
+  const updateState = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    const pos = el.scrollLeft;
+    setProgress(max > 0 ? pos / max : 0);
+    setCanPrev(pos > 4);
+    setCanNext(pos < max - 4);
   }, []);
 
-  const scrollLeft = () => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.scrollBy({ left: -150, behavior: "smooth" });
-    }
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateState, { passive: true });
+    updateState();
+    return () => el.removeEventListener("scroll", updateState);
+  }, [updateState, categories]);
+
+  const scrollBy = (dir: 1 | -1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const cardW = (el.querySelector("div") as HTMLElement | null)?.offsetWidth ?? 300;
+    el.scrollBy({ left: dir * (cardW + 20), behavior: "smooth" });
   };
 
-  const scrollRight = () => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.scrollBy({ left: 150, behavior: "smooth" });
-    }
+  const onMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true;
+    dragStartX.current = e.clientX;
+    scrollStartX.current = trackRef.current?.scrollLeft ?? 0;
+    e.preventDefault();
   };
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !trackRef.current) return;
+    trackRef.current.scrollLeft = scrollStartX.current - (e.clientX - dragStartX.current);
+  };
+  const onMouseUp = () => { isDragging.current = false; };
 
   return (
-    <section className="py-12 lg:py-16 bg-white relative">
+    <section className="pt-6 pb-2 lg:pt-12 lg:pb-4 bg-white">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-center justify-between mb-6"
-        >
-          <h2 className="text-sm font-bold tracking-wider text-[#111111] uppercase">
-            Shop by Category
+
+        {/* Header */}
+        <div className="mb-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#5B1E7A] mb-1">Collections</p>
+          <h2 className="text-3xl font-[family-name:var(--font-playfair)] font-semibold text-[#111111]">
+            Shop By Category
           </h2>
+        </div>
+
+        {/* Slider track */}
+        <div
+          ref={trackRef}
+          className="flex gap-5 overflow-x-auto scroll-smooth pb-2 cursor-grab active:cursor-grabbing select-none"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          onMouseLeave={onMouseUp}
+        >
+          {categories.map((category, index) => (
+            <motion.div
+              key={category.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+              className="shrink-0 w-[220px] sm:w-[260px] md:w-[300px]"
+            >
+              <Link
+                href={`/categories/${category.slug}`}
+                className="group relative block h-[220px] sm:h-[260px] md:h-[320px] rounded-[24px] overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_40px_rgba(91,30,122,0.16)] transition-all duration-300"
+                draggable={false}
+              >
+                <Image
+                  src={category.image || PLACEHOLDER}
+                  alt={category.name}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width:640px)220px,(max-width:768px)260px,300px"
+                  unoptimized={!category.image}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <div className="absolute top-4 left-4 rounded-full bg-[#5B1E7A] px-3 py-1.5 text-[10px] font-bold text-white shadow-md">
+                  {category._count.products} Products
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <h3 className="mb-1.5 text-lg font-semibold text-white">{category.name}</h3>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-white/80 group-hover:text-white transition-colors">
+                    Explore Now <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Progress bar */}
+        <div className="mt-5 h-[2px] bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-[#5B1E7A] rounded-full transition-all duration-150"
+            style={{ width: `${Math.max(8, progress * 100)}%` }}
+          />
+        </div>
+
+        {/* Bottom controls */}
+        <div className="mt-5 flex items-center justify-between">
           <Link
             href="/products"
-            className="text-xs font-semibold text-[#5B1E7A] hover:underline inline-flex items-center gap-1"
+            className="flex items-center gap-1.5 text-sm font-medium text-[#5B1E7A] hover:gap-2.5 transition-all duration-200"
           >
-            View all <ChevronRight className="w-3.5 h-3.5" />
+            View all <ArrowRight className="w-4 h-4" />
           </Link>
-        </motion.div>
-
-        {/* Mobile Navigation Arrows */}
-        <div className="lg:hidden absolute left-2 top-1/2 mt-8 z-10">
-          <button
-            onClick={scrollLeft}
-            className={`w-8 h-8 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center transition-opacity ${
-              canScrollLeft ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
-            aria-label="Scroll left"
-          >
-            <ChevronLeft className="w-4 h-4 text-[#5B1E7A]" />
-          </button>
-        </div>
-        <div className="lg:hidden absolute right-2 top-1/2 mt-8 z-10">
-          <button
-            onClick={scrollRight}
-            className={`w-8 h-8 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center transition-opacity ${
-              canScrollRight ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
-            aria-label="Scroll right"
-          >
-            <ChevronRight className="w-4 h-4 text-[#5B1E7A]" />
-          </button>
-        </div>
-
-        {/* Categories - Horizontal Cards */}
-        <div className="relative -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
-          <motion.div
-            ref={scrollContainerRef}
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            className="flex items-stretch gap-3 sm:gap-4 lg:gap-5 overflow-x-auto pb-4 scrollbar-hide"
-          >
-            {categories.map((category) => (
-              <motion.div key={category.id} variants={itemVariants} className="flex-shrink-0 w-[240px] sm:w-[280px] lg:w-[320px]">
-                <Link
-                  href={`/categories/${category.slug}`}
-                  className="group flex items-center gap-4 rounded-3xl bg-[#F8F4FB] p-3 pr-5 hover:bg-[#F0E6F5] hover:shadow-[0_8px_30px_rgba(91,30,122,0.10)] transition-all duration-300 h-full"
-                >
-                  {/* Square Image */}
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden shrink-0 bg-white">
-                    <Image
-                      src={category.image || PLACEHOLDER}
-                      alt={category.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      sizes="120px"
-                      unoptimized={!category.image}
-                    />
-                  </div>
-
-                  {/* Category Info */}
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-sm sm:text-base font-semibold text-[#111111] group-hover:text-[#5B1E7A] transition-colors duration-300 mb-1">
-                      {category.name}
-                    </span>
-                    
-                    <span className="text-xs font-semibold text-[#5B1E7A] inline-flex items-center gap-1">
-                      Explore Now <ChevronRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
-                    </span>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => scrollBy(-1)}
+              disabled={!canPrev}
+              aria-label="Scroll left"
+              className="w-9 h-9 rounded-full border border-gray-200 bg-white flex items-center justify-center shadow-sm transition-all duration-200 hover:border-[#5B1E7A] hover:text-[#5B1E7A] disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => scrollBy(1)}
+              disabled={!canNext}
+              aria-label="Scroll right"
+              className="w-9 h-9 rounded-full bg-[#5B1E7A] text-white flex items-center justify-center shadow-md transition-all duration-200 hover:bg-[#4a1870] disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </section>

@@ -22,7 +22,7 @@ export function NewsletterSection() {
   };
 
   return (
-    <section className="py-20 lg:py-28 bg-gradient-to-br from-purple-50 via-white to-purple-50 relative overflow-hidden">
+    <section className="py-10 lg:py-14 bg-gradient-to-br from-purple-50 via-white to-purple-50 relative overflow-hidden">
       {/* Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent" />
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent" />
@@ -40,12 +40,8 @@ export function NewsletterSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="inline-flex items-center gap-2 bg-purple-100 text-[#5B1E7A] px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Sparkles className="w-4 h-4" />
-              <span>Join 50,000+ Fashion Lovers</span>
-            </div>
-
-            <h2 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#111111] mb-4 leading-tight">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#5B1E7A] mb-1">Newsletter</p>
+            <h2 className="text-3xl font-[family-name:var(--font-playfair)] font-semibold text-[#111111] mb-4">
               Subscribe to Our Newsletter
             </h2>
             <p className="text-gray-600 text-base lg:text-lg mb-8 max-w-lg">

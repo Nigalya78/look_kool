@@ -72,7 +72,7 @@ export function TestimonialsSection() {
   };
 
   return (
-    <section className="py-20 lg:py-28 bg-white relative overflow-hidden">
+    <section className="py-10 lg:py-14 bg-white relative overflow-hidden">
       {/* Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent" />
       <div className="absolute top-20 left-10 w-64 h-64 bg-purple-100/50 rounded-full blur-3xl" />
@@ -87,13 +87,10 @@ export function TestimonialsSection() {
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-16"
         >
-          <span className="text-sm font-medium tracking-[0.2em] text-[#5B1E7A] mb-4 block">
-            TESTIMONIALS
-          </span>
-          <h2 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#111111]">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#5B1E7A] mb-1">Testimonials</p>
+          <h2 className="text-3xl font-[family-name:var(--font-playfair)] font-semibold text-[#111111]">
             What Our Customers Say
           </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-transparent via-[#5B1E7A] to-transparent mx-auto mt-6" />
         </motion.div>
 
         {/* Testimonial Carousel */}

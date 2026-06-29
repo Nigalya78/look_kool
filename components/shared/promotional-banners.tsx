@@ -45,7 +45,7 @@ export function PromotionalBanners() {
           className="flex items-center justify-between mb-4 lg:mb-8"
         >
           <h2 className="text-sm font-bold tracking-wider text-[#111111] uppercase">
-            Trending Now
+            Shop By Category
           </h2>
           <Link
             href="/products"

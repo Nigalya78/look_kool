@@ -200,6 +200,25 @@ export function ProductCard(props: Readonly<ProductCardProps>) {
             </div>
           )}
 
+          {/* Add to Cart — desktop hover only */}
+          <div className="hidden sm:block absolute bottom-2 inset-x-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
+            <button
+              type="button"
+              onClick={() => setIsPopupOpen(true)}
+              disabled={displayStock === 0}
+              className={cn(
+                "w-full py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-md",
+                displayStock === 0
+                  ? "bg-white/80 text-muted-foreground cursor-not-allowed"
+                  : isInCart
+                  ? "bg-emerald-600 text-white"
+                  : "bg-white text-black hover:bg-[#5B1E7A] hover:text-white"
+              )}
+            >
+              {isInCart ? <Check className="h-3.5 w-3.5" /> : <ShoppingCart className="h-3.5 w-3.5" />}
+              {isInCart ? "Added to Cart" : "Add to Cart"}
+            </button>
+          </div>
         </div>
 
         {/* Info */}
@@ -247,13 +266,13 @@ export function ProductCard(props: Readonly<ProductCardProps>) {
             <p className="text-[10px] text-amber-600 font-medium">Only {displayStock} left!</p>
           )}
 
-          {/* Add to Cart — always visible */}
+          {/* Add to Cart — mobile only */}
           <button
             type="button"
             onClick={() => setIsPopupOpen(true)}
             disabled={displayStock === 0}
             className={cn(
-              "mt-2 w-full py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors",
+              "sm:hidden mt-2 w-full py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors",
               displayStock === 0
                 ? "bg-muted text-muted-foreground cursor-not-allowed"
                 : isInCart

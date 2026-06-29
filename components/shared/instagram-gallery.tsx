@@ -73,7 +73,7 @@ const itemVariants = {
 
 export function InstagramGallery() {
   return (
-    <section className="py-20 lg:py-28 bg-white relative overflow-hidden">
+    <section className="py-10 lg:py-14 bg-white relative overflow-hidden">
       {/* Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent" />
 
@@ -86,18 +86,10 @@ export function InstagramGallery() {
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 text-[#5B1E7A] mb-4">
-            <InstagramIcon className="w-5 h-5" />
-            <span className="text-sm font-medium tracking-[0.2em] uppercase">
-              @lookkool.in
-            </span>
-          </div>
-          <h2 className="font-[family-name:var(--font-playfair)] text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#111111] mb-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#5B1E7A] mb-1">@lookkool.in</p>
+          <h2 className="text-3xl font-[family-name:var(--font-playfair)] font-semibold text-[#111111]">
             Follow Our Style Journey
           </h2>
-          <p className="text-gray-600 max-w-xl mx-auto">
-            Get inspired by our latest looks and join the LookKool community on Instagram
-          </p>
         </motion.div>
 
         {/* Instagram Grid */}
