@@ -12,7 +12,7 @@ const rightCards = [
     title: "Kurtis",
     subtitle: "Collection",
     href: "/categories/kurtis",
-    image: "https://images.unsplash.com/photo-1610030469629-276faf63f469?w=400&q=80",
+    image: "/right1.png",
   },
   {
     badge: "25% OFF",
@@ -20,7 +20,7 @@ const rightCards = [
     title: "Tops",
     subtitle: "Collection",
     href: "/categories/tops",
-    image: "https://images.unsplash.com/photo-1610030469629-276faf63f469?w=400&q=80",
+    image: "/right2.png",
   },
 ];
 
@@ -77,7 +77,7 @@ export function HeroSection() {
             <div className="absolute -top-20 -right-20 w-80 h-80 bg-[#5B1E7A]/10 rounded-full blur-3xl" />
             <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-purple-300/20 rounded-full blur-3xl" />
             <Image
-              src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=900&q=80"
+              src="/hero.png"
               alt="Fashion Model"
               fill
               className="object-cover object-top"
@@ -108,9 +108,7 @@ export function HeroSection() {
                     sizes="20vw"
                   />
                 </div>
-                <div className="absolute top-4 right-4 bg-[#5B1E7A] text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-md">
-                  {card.badge}
-                </div>
+                
                 <div className="relative h-full p-6 xl:p-7 flex flex-col justify-center max-w-[55%]">
                   <span className="text-[10px] font-bold tracking-[0.15em] text-[#5B1E7A] uppercase mb-1.5">
                     {card.eyebrow}
