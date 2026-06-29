@@ -13,7 +13,7 @@ interface CartPageProps {
 
 const emptyStateActions = [
   { label: "Continue Shopping", href: "/products" },
-  { label: "Browse Categories", href: "/categories/living-room" },
+  { label: "Browse Categories", href: "/products" },
 ];
 
 export function CartPage({ isMember = false }: CartPageProps) {

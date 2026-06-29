@@ -127,7 +127,7 @@ export default async function ProductsPage() {
             </Link>
             <div className="h-8 w-px bg-border hidden sm:block" />
             <div>
-              <h1 className="text-lg md:text-xl font-bold text-foreground leading-tight">All Products</h1>
+              <h1 className="text-2xl font-[family-name:var(--font-playfair)] font-semibold text-[#111111]">All Products</h1>
               <nav className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
                 <Link href="/" className="hover:text-primary transition-colors">Home</Link>
                 <span>/</span>

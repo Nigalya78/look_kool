@@ -14,6 +14,16 @@ export const dynamic = "force-dynamic";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
+function detectMimeFromBuffer(buf: Buffer): string | null {
+  if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "image/jpeg";
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return "image/png";
+  if (buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46) return "image/gif";
+  if (buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46) return "image/webp";
+  // AVIF/HEIF — ftyp box at offset 4
+  if (buf.slice(4, 8).toString("ascii") === "ftyp") return "image/avif";
+  return null;
+}
+
 export async function POST(req: NextRequest) {
   try {
     console.log("[Upload] Starting upload request");
@@ -43,19 +53,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json({ error: `Unsupported file type: ${file.type}` }, { status: 400 });
-    }
-
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ error: "File exceeds 5 MB limit" }, { status: 400 });
     }
 
-    const key = generateImageKey(folder, file.name);
-    console.log(`[Upload] Generated key: ${key}`);
-    
     const buffer = Buffer.from(await file.arrayBuffer());
     console.log(`[Upload] Buffer size: ${buffer.length} bytes`);
+
+    const detectedMime = detectMimeFromBuffer(buffer);
+    if (!detectedMime || !ALLOWED_TYPES.includes(detectedMime)) {
+      return NextResponse.json({ error: `Unsupported or invalid file type` }, { status: 400 });
+    }
+
+    const key = generateImageKey(folder, file.name);
+    console.log(`[Upload] Generated key: ${key}`);
 
     console.log(`[Upload] Uploading to R2 bucket: ${process.env.R2_BUCKET_NAME}`);
     await r2.send(
@@ -63,7 +74,7 @@ export async function POST(req: NextRequest) {
         Bucket: process.env.R2_BUCKET_NAME!,
         Key: key,
         Body: buffer,
-        ContentType: file.type,
+        ContentType: detectedMime,
         ContentLength: buffer.length,
       })
     );

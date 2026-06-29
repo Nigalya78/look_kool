@@ -108,16 +108,16 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4">
+            <h1 className="text-3xl font-[family-name:var(--font-playfair)] font-semibold text-[#111111]">
               Our Blog
             </h1>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Discover the latest in home furniture, design trends, and expert tips from our team.
+            <p className="text-sm text-muted-foreground max-w-2xl mx-auto mt-2">
+              Discover the latest fashion trends, styling tips, and expert advice to inspire your everyday wardrobe.
             </p>
             {!isMember && (
               <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full">
                 <Crown className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-primary">
+                <span className="text-sm font-medium text-[#5B1E7A]">
                   Become a member to unlock all articles
                 </span>
               </div>

@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { auth } from "@/auth";
 
-// Lightweight middleware - checks for session cookie only
-// Full auth validation happens in page components
-export default function middleware(req: NextRequest) {
+export default auth(function middleware(req) {
   const { pathname } = req.nextUrl;
-  const sessionCookie = req.cookies.get("authjs.session-token") || req.cookies.get("__Secure-authjs.session-token");
-  const isLoggedIn = !!sessionCookie;
+  const session = req.auth;
+  const isLoggedIn = !!session?.user;
 
   if (pathname.startsWith("/admin")) {
-    // Admin check happens in page component - just redirect if no session
     if (!isLoggedIn) {
       return NextResponse.redirect(new URL("/login", req.url));
+    }
+    if (session?.user?.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", req.url));
     }
   }
 
@@ -25,7 +26,7 @@ export default function middleware(req: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: ["/admin/:path*", "/account/:path*"],

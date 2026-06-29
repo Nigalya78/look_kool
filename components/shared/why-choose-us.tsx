@@ -66,7 +66,7 @@ const itemVariants = {
 
 export function WhyChooseUs() {
   return (
-    <section className="py-20 lg:py-28 bg-gradient-to-b from-purple-50 via-white to-purple-50 relative overflow-hidden">
+    <section className="py-10 lg:py-14 bg-gradient-to-b from-purple-50 via-white to-purple-50 relative overflow-hidden">
       {/* Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent" />
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-200 to-transparent" />

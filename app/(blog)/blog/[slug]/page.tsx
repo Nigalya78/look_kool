@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import sanitizeHtml from "sanitize-html";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
@@ -132,8 +133,21 @@ async function getBlogPost(slug: string, userId?: string) {
   // Calculate reading time
   const readTime = calculateReadingTime(post.content);
   
-  // Process content for embedded media
-  const processedContent = processContent(post.content);
+  // Process content for embedded media, then sanitize to prevent XSS
+  const rawProcessed = processContent(post.content);
+  const processedContent = sanitizeHtml(rawProcessed, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+      "img", "iframe", "figure", "figcaption", "video", "source",
+    ]),
+    allowedAttributes: {
+      ...sanitizeHtml.defaults.allowedAttributes,
+      iframe: ["src", "frameborder", "allow", "allowfullscreen", "style", "width", "height"],
+      img: ["src", "alt", "title", "width", "height", "style", "class"],
+      div: ["style", "class", "data-yt-id"],
+      "*": ["class", "id", "style"],
+    },
+    allowedIframeHostnames: ["www.youtube-nocookie.com", "www.youtube.com"],
+  });
 
   return {
     ...post,
@@ -217,16 +231,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-6">
               <Lock className="h-10 w-10 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-4">
+            <h1 className="text-2xl font-[family-name:var(--font-playfair)] font-semibold text-[#111111] mb-4">
               This is a Member-Only Article
             </h1>
-            <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-sm text-muted-foreground mb-8 max-w-2xl mx-auto">
               Get instant access to this article and hundreds more by becoming a LookKool member.
             </p>
             
             <div className="bg-white rounded-xl border border-slate-200 p-8 max-w-md mx-auto mb-8">
-              <h3 className="font-semibold text-slate-900 mb-2">What you'll get:</h3>
-              <ul className="text-left text-sm text-slate-600 space-y-2">
+              <h3 className="font-semibold text-[#111111] mb-2">What you'll get:</h3>
+              <ul className="text-left text-sm text-muted-foreground space-y-2">
                 <li>• Access to all member-only articles</li>
                 <li>• Exclusive fashion tips and styling guides</li>
                 <li>• Early access to new collections</li>
@@ -241,7 +255,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </Button>
             </Link>
             
-            <p className="text-sm text-slate-500 mt-4">
+            <p className="text-sm text-muted-foreground mt-4">
               or <Link href="/blog" className="text-primary hover:underline">browse all articles</Link>
             </p>
           </div>
@@ -260,7 +274,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link 
             href="/blog" 
-            className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#5B1E7A] transition-colors"
           >
             <ChevronLeft className="h-4 w-4" />
             Back to Blog
@@ -290,19 +304,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           )}
 
           {/* Title */}
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-[family-name:var(--font-playfair)] font-semibold text-[#111111] mb-6 leading-tight">
             {post.title}
           </h1>
 
           {/* Excerpt */}
           {post.excerpt && (
-            <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+            <p className="text-base text-muted-foreground mb-8 leading-relaxed">
               {post.excerpt}
             </p>
           )}
 
           {/* Article Meta */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm text-slate-500 mb-8">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm text-muted-foreground mb-8">
             {/* Author */}
             {post.author && (
               <div className="flex items-center gap-2.5">
@@ -313,7 +327,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-slate-900 text-sm">{post.author.name}</p>
+                  <p className="font-medium text-[#111111] text-sm">{post.author.name}</p>
                   {post.author.isMember && (
                     <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/10 border border-primary/20 rounded-full">
                       <Crown className="h-3 w-3 text-primary" />
@@ -403,7 +417,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Article Content */}
           <div 
-            className="prose prose-lg max-w-none prose-slate prose-headings:text-slate-900 prose-p:text-slate-600 prose-p:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-slate-900 prose-code:text-slate-900 prose-pre:bg-slate-50 prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:text-slate-700"
+            className="prose prose-lg max-w-none prose-headings:font-[family-name:var(--font-playfair)] prose-headings:text-[#111111] prose-p:text-muted-foreground prose-p:leading-relaxed prose-a:text-[#5B1E7A] prose-a:no-underline hover:prose-a:underline prose-strong:text-[#111111] prose-code:text-[#111111] prose-pre:bg-slate-50 prose-blockquote:border-l-[#5B1E7A] prose-blockquote:bg-primary/5 prose-blockquote:text-muted-foreground"
             dangerouslySetInnerHTML={{ __html: post.processedContent }}
           />
 
@@ -411,7 +425,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {post.socialLinks && (
             <Card className="mt-12">
               <CardContent className="p-6">
-                <h3 className="font-semibold text-slate-900 mb-4">Follow & Connect</h3>
+                <h3 className="font-semibold text-[#111111] mb-4">Follow & Connect</h3>
                 <div className="flex gap-3">
                   {/* Parse social links from JSON and display icons */}
                   <Button variant="outline" size="sm">

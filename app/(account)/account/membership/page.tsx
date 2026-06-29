@@ -60,7 +60,7 @@ function PlanCard({ plan, isBestValue, isRenewal = false, currentExpiry }: { pla
             <Crown className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-bold text-foreground text-base leading-tight">{plan.name}</h3>
+            <h3 className="font-[family-name:var(--font-playfair)] font-semibold text-[#111111] text-base leading-tight">{plan.name}</h3>
             {plan.description && (
               <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{plan.description}</p>
             )}
@@ -69,7 +69,7 @@ function PlanCard({ plan, isBestValue, isRenewal = false, currentExpiry }: { pla
 
         <div className="border-t border-border pt-4">
           <div className="flex items-baseline gap-1">
-            <span className="text-4xl font-black text-foreground tracking-tight">{currFmt.format(plan.price)}</span>
+            <span className="text-4xl font-[family-name:var(--font-playfair)] font-bold text-[#111111] tracking-tight">{currFmt.format(plan.price)}</span>
             <span className="text-sm text-muted-foreground font-medium">/ {dur}</span>
           </div>
           {monthlyEquiv && (
@@ -375,7 +375,7 @@ export default async function MembershipPage({
                     <div className="px-6 py-4 border-b border-border flex items-center gap-2">
                       <RefreshCw className="h-4 w-4 text-primary" />
                       <div>
-                        <h2 className="text-base font-bold text-foreground">Renew Your Membership</h2>
+                        <h2 className="text-base font-[family-name:var(--font-playfair)] font-semibold text-[#111111]">Renew Your Membership</h2>
                         <p className="text-xs text-muted-foreground mt-0.5">Extend your membership to keep all your benefits uninterrupted.</p>
                       </div>
                     </div>
@@ -410,7 +410,7 @@ export default async function MembershipPage({
                       <div className="inline-flex items-center gap-1.5 text-xs font-bold text-primary uppercase tracking-widest mb-1">
                         <Star className="h-3 w-3 fill-primary" /> Look Kool Premium Membership
                       </div>
-                      <h1 className="text-2xl sm:text-3xl font-black text-foreground leading-tight">Save More on Every Order</h1>
+                      <h1 className="text-2xl sm:text-3xl font-[family-name:var(--font-playfair)] font-semibold text-[#111111] leading-tight">Save More on Every Order</h1>
                       <p className="text-sm text-muted-foreground mt-1 max-w-xl">
                         One membership. Instant member pricing, free express delivery, extended warranty, and more on every order, every day.
                       </p>
@@ -420,7 +420,7 @@ export default async function MembershipPage({
 
                 {/* Plan cards */}
                 <div>
-                  <h2 className="text-base font-bold text-foreground mb-3">Choose Your Plan</h2>
+                  <h2 className="text-base font-[family-name:var(--font-playfair)] font-semibold text-[#111111] mb-3">Choose Your Plan</h2>
                   {hasPlans ? (
                     <div className={`grid gap-4 ${
                       plans.length === 1 ? "grid-cols-1 max-w-sm" :
@@ -442,7 +442,7 @@ export default async function MembershipPage({
 
                 {/* Benefits grid */}
                 <div className="rounded-2xl border border-border bg-white shadow-sm p-6">
-                  <h2 className="text-lg font-black text-foreground mb-1">Everything You Get</h2>
+                  <h2 className="text-lg font-[family-name:var(--font-playfair)] font-semibold text-[#111111] mb-1">Everything You Get</h2>
                   <p className="text-sm text-muted-foreground mb-5">Six exclusive perks included with every Look Kool membership.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {PERKS.map(({ Icon, title, desc }) => (
@@ -462,7 +462,7 @@ export default async function MembershipPage({
                 {/* Comparison table */}
                 <div className="rounded-2xl border border-border bg-white shadow-sm overflow-hidden">
                   <div className="px-6 py-4 border-b border-border">
-                    <h2 className="text-lg font-black text-foreground">Member vs. Standard</h2>
+                    <h2 className="text-lg font-[family-name:var(--font-playfair)] font-semibold text-[#111111]">Member vs. Standard</h2>
                     <p className="text-sm text-muted-foreground mt-0.5">See exactly what you unlock with membership.</p>
                   </div>
                   <div className="overflow-x-auto">
@@ -495,7 +495,7 @@ export default async function MembershipPage({
 
                 {/* Testimonials */}
                 <div className="rounded-2xl border border-border bg-white shadow-sm p-6">
-                  <h2 className="text-lg font-black text-foreground mb-5">What Members Say</h2>
+                  <h2 className="text-lg font-[family-name:var(--font-playfair)] font-semibold text-[#111111] mb-5">What Members Say</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {TESTIMONIALS.map(({ name, location, quote, stars }) => (
                       <div key={name} className="rounded-xl bg-secondary/40 border border-border p-4">
