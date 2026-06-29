@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Layers, Check, Zap, ImageOff } from "lucide-react";
+import { ShoppingCart, Check, Zap, ImageOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart";
 import { WishlistToggleButton } from "./wishlist-toggle-button";
@@ -187,21 +187,6 @@ export function ProductCard(props: Readonly<ProductCardProps>) {
             )}
           </Link>
 
-          {/* Badges */}
-          <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
-            {hasDiscount && (
-              <span className="px-1.5 py-0.5 bg-destructive text-white text-[10px] font-bold rounded">
-                -{discountPercent}%
-              </span>
-            )}
-            {product.hasVariants && (
-              <span className="px-1.5 py-0.5 bg-black/70 text-white text-[10px] font-medium rounded flex items-center gap-0.5">
-                <Layers className="w-2.5 h-2.5" />
-                Options
-              </span>
-            )}
-          </div>
-
           <WishlistToggleButton
             product={wishlistProduct}
             className="absolute top-2 right-2 z-10 h-7 w-7"
@@ -215,25 +200,6 @@ export function ProductCard(props: Readonly<ProductCardProps>) {
             </div>
           )}
 
-          {/* Quick add — visible on hover (desktop) */}
-          <div className="absolute bottom-0 inset-x-0 translate-y-full group-hover:translate-y-0 transition-transform duration-200 hidden sm:block">
-            <button
-              type="button"
-              onClick={() => setIsPopupOpen(true)}
-              disabled={displayStock === 0}
-              className={cn(
-                "w-full py-2.5 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors",
-                displayStock === 0
-                  ? "bg-muted text-muted-foreground cursor-not-allowed"
-                  : isInCart
-                  ? "bg-emerald-600 text-white"
-                  : "bg-foreground text-white hover:bg-primary"
-              )}
-            >
-              {isInCart ? <Check className="h-3.5 w-3.5" /> : <ShoppingCart className="h-3.5 w-3.5" />}
-              {isInCart ? "Added to Cart" : "Quick Add"}
-            </button>
-          </div>
         </div>
 
         {/* Info */}
@@ -264,6 +230,11 @@ export function ProductCard(props: Readonly<ProductCardProps>) {
                 ₹{displayComparePrice.toLocaleString()}
               </span>
             )}
+            {hasDiscount && (
+              <span className="text-[10px] sm:text-xs font-bold text-destructive">
+                -{discountPercent}%
+              </span>
+            )}
           </div>
 
           {displayMemberPrice && (
@@ -276,13 +247,13 @@ export function ProductCard(props: Readonly<ProductCardProps>) {
             <p className="text-[10px] text-amber-600 font-medium">Only {displayStock} left!</p>
           )}
 
-          {/* Mobile add to cart */}
+          {/* Add to Cart — always visible */}
           <button
             type="button"
             onClick={() => setIsPopupOpen(true)}
             disabled={displayStock === 0}
             className={cn(
-              "sm:hidden mt-2 w-full py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors",
+              "mt-2 w-full py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors",
               displayStock === 0
                 ? "bg-muted text-muted-foreground cursor-not-allowed"
                 : isInCart

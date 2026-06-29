@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, ArrowRight, ShoppingCart, Check } from "luci
 import { WishlistToggleButton } from "./wishlist-toggle-button";
 import { ProductPopupModal } from "./product-popup-modal";
 import { useCartStore } from "@/store/cart";
+import { ShoppingBag } from "lucide-react";
 
 interface Product {
   id: string;
@@ -97,11 +98,7 @@ function RecommendedCard({ product, isMember = false }: { product: Product; isMe
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </Link>
 
-          {hasDiscount && (
-            <span className="absolute top-3 left-3 px-2 py-0.5 bg-[#5B1E7A] text-white text-[10px] font-bold rounded-full tracking-wide z-10">
-              -{discountPct}% OFF
-            </span>
-          )}
+          
 
           {/* Wishlist icon */}
           <WishlistToggleButton
@@ -112,20 +109,13 @@ function RecommendedCard({ product, isMember = false }: { product: Product; isMe
           {/* Quick-add button on hover — desktop only */}
           <div className="hidden sm:block absolute bottom-0 inset-x-0 translate-y-full group-hover:translate-y-0 transition-transform duration-200">
             <button
-              type="button"
-              onClick={(e) => { e.preventDefault(); setIsPopupOpen(true); }}
-              disabled={displayStock === 0}
-              className={`w-full py-2.5 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
-                displayStock === 0
-                  ? "bg-muted text-muted-foreground cursor-not-allowed"
-                  : isInCart
-                  ? "bg-emerald-600 text-white"
-                  : "bg-foreground text-white hover:bg-[#5B1E7A]"
-              }`}
-            >
-              {isInCart ? <Check className="h-3.5 w-3.5" /> : <ShoppingCart className="h-3.5 w-3.5" />}
-              {displayStock === 0 ? "Out of Stock" : isInCart ? "Added" : "Quick Add"}
-            </button>
+          className="absolute bottom-3 left-3 right-3 bg-white text-[#111111] py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-[#5B1E7A] hover:text-white transition-all duration-300 shadow-lg"
+          aria-label="Add to cart"
+        >
+          <ShoppingBag className="w-4 h-4" />
+          Add to Cart
+        </button>
+            
           </div>
         </div>
 
